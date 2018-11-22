@@ -1,0 +1,22 @@
+{
+    "metadata": {
+        "title": "Water Network Integrated pywr-MOEA",
+        "description": "Model to test the concept of couple a water-energy simulation model with an expansion planning MOEA model",
+        "minimum_version": "0.5"
+    },
+    "timestepper": {
+        "start": "2015-01-01",
+        "end": "2015-12-31",
+        "timestep": 1
+    },
+    "scenarios":[
+        {
+            "name": "weather",
+            "size": 10
+        }
+    ],
+    "nodes": [],
+    "edges": [],
+    "parameters": {},
+    "recorders": {}
+}

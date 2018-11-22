@@ -1,0 +1,33 @@
+# TODO list for water-energy model
+
+- Hydrology & weather
+    - ~~Review this.~~ 
+    - ~~Generate some data for the different catchments. (See fdtc-hydrology work).~~
+    - Plot this data, look at some FDCs and other statistics.
+- Energy model
+    - ~~Build the network~~ 
+    - Check the network
+    - Setup MOEA
+        - Objectives
+        - Variables
+    - Run it
+        - Stress test of the scenarios
+        - Run the MOEA
+- Water model
+    - ~~Build the network~~  
+    - Check the network
+    - Setup MOEA
+        - Objectives
+            - Deficits
+            - Capex
+            - Opex            
+        - Variables    
+    - Run it
+        - Stress test of the scenarios
+        - Run the MOEA
+- Water-energy model
+    - Build it
+    - Check energy mass balance, etc.
+    - Run it
+        - Stress test of the scenarios
+        - Run the MOEA

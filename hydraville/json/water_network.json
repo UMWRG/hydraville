@@ -1,0 +1,356 @@
+{
+    "nodes": [{
+            "name": "catchment1",
+            "type": "catchment",
+            "flow": "catchment1_inflow"
+        },
+        {
+            "name": "catchment2",
+            "type": "catchment",
+            "flow": "catchment2_inflow"
+        },
+        {
+            "name": "catchment3",
+            "type": "catchment",
+            "flow": "catchment3_inflow"
+        },
+        {
+            "name": "catchment4",
+            "type": "catchment",
+            "flow": "catchment4_inflow"
+        },
+        {
+            "name": "catchment5",
+            "type": "catchment",
+            "flow": "catchment5_inflow"
+        },
+        {
+            "name": "river1",
+            "type": "river"
+        },
+        {
+            "name": "river2",
+            "type": "river"
+        },
+        {
+            "name": "river3",
+            "type": "river"
+        },
+        {
+            "name": "river4",
+            "type": "river"
+        },
+        {
+            "name": "reservoir1",
+            "type": "storage",
+            "initial_volume": 200,
+            "max_volume": "reservoir1_capacity"
+        },
+        {
+            "name": "reservoir2",
+            "type": "storage",
+            "initial_volume": 200,
+            "max_volume": "reservoir2_capacity"
+        },
+        {
+            "name": "spill1",
+            "type": "river",
+            "cost": 545
+        },
+        {
+            "name": "spill2",
+            "type": "river",
+            "cost": 545
+        },
+        {
+            "name": "turbine1",
+            "type": "river",
+            "max_flow": "turbine1_control"
+        },
+        {
+            "name": "turbine2",
+            "type": "river",
+            "max_flow": "turbine2_control"
+        },
+        {
+            "name": "irrigation1_channel1",
+            "type": "link",
+            "max_flow": "channel1_capacity"
+        },
+        {
+            "name": "irrigation1_channel2",
+            "type": "link",
+            "max_flow": "channel2_capacity"
+        },
+        {
+            "name": "irrigation2_channel3",
+            "type": "link",
+            "max_flow": "channel3_capacity"
+        },
+        {
+            "name": "water_supply1_channel4",
+            "type": "link",
+            "max_flow": "channel4_capacity"
+        },
+        {
+            "name": "irrigation1",
+            "type": "Output",
+            "max_flow": 5,
+            "cost": -54500
+        },
+        {
+            "name": "irrigation2",
+            "type": "Output",
+            "max_flow": 5,
+            "cost": -54500
+        },
+        {
+            "name": "water_supply1",
+            "type": "Output",
+            "max_flow": 5,
+            "cost": -54500
+        },
+        {
+            "name": "return_flow1",
+            "type": "river"
+        },
+        {
+            "name": "return_flow2",
+            "type": "river"
+        },
+        {
+            "name": "term1",
+            "type": "output"
+        }
+    ],
+    "edges": [
+        ["catchment1", "river1"],
+        ["river1", "irrigation1_channel1"],
+        ["irrigation1_channel1", "irrigation1"],
+        ["irrigation1", "return_flow1"],
+        ["return_flow1", "river2"],
+        ["river1", "river2"],
+        ["catchment3", "river2"],
+        ["river2", "reservoir2"],
+
+
+        ["catchment2", "reservoir1"],
+        ["reservoir1", "irrigation1_channel2"],
+        ["irrigation1_channel2", "irrigation1"],
+        ["reservoir1", "spill1"],
+        ["reservoir1", "turbine1"],
+
+
+        ["spill1", "river3"],
+        ["turbine1", "river3"],
+        ["river3", "reservoir2"],
+        ["catchment4", "reservoir2"],
+        ["reservoir2", "water_supply1_channel4"],
+        ["water_supply1_channel4", "water_supply1"],
+        ["reservoir2", "turbine2"],
+        ["turbine2", "river4"],
+        ["reservoir2", "irrigation2_channel3"],
+        ["irrigation2_channel3", "irrigation2"],
+
+        ["catchment5", "irrigation2"],
+
+        ["irrigation2", "return_flow2"],
+        ["return_flow2", "river4"],
+        ["reservoir2", "spill2"],
+        ["spill2", "river4"],
+        ["river4", "term1"]
+    ],
+    "parameters": {
+        "catchment1_inflow": {
+            "type": "dataframe",
+            "url": "../data/catchmod_flows_by_catchment_sub010.h5",
+            "scenario": "weather",
+            "key": "catchment1_cntr"
+        },
+        "catchment2_inflow": {
+            "type": "dataframe",
+            "url": "../data/catchmod_flows_by_catchment_sub010.h5",
+            "scenario": "weather",
+            "key": "catchment2_cntr"
+        },
+        "catchment3_inflow": {
+            "type": "dataframe",
+            "url": "../data/catchmod_flows_by_catchment_sub010.h5",
+            "scenario": "weather",
+            "key": "catchment3_cntr"
+        },
+        "catchment4_inflow": {
+            "type": "dataframe",
+            "url": "../data/catchmod_flows_by_catchment_sub010.h5",
+            "scenario": "weather",
+            "key": "catchment4_cntr"
+        },
+        "catchment5_inflow": {
+            "type": "dataframe",
+            "url": "../data/catchmod_flows_by_catchment_sub010.h5",
+            "scenario": "weather",
+            "key": "catchment5_cntr"
+        },
+        "channel1_capacity": {
+            "type": "constant",
+            "value": 10,
+            "is_variable": true,
+            "upper_bounds": 15,
+            "lower_bounds": 0
+        },
+        "channel2_capacity": {
+            "type": "constant",
+            "value": 10,
+            "is_variable": true,
+            "upper_bounds": 15,
+            "lower_bounds": 0
+        },
+        "channel3_capacity": {
+            "type": "constant",
+            "value": 10,
+            "is_variable": true,
+            "upper_bounds": 15,
+            "lower_bounds": 0
+        },
+        "channel4_capacity": {
+            "type": "constant",
+            "value": 10,
+            "is_variable": true,
+            "upper_bounds": 15,
+            "lower_bounds": 0
+        },
+        "reservoir1_capacity": {
+            "type": "constant",
+            "value": 900,
+            "is_variable": true,
+            "upper_bounds": 1000,
+            "lower_bounds": 0
+        },
+        "reservoir2_capacity": {
+            "type": "constant",
+            "value": 600,
+            "is_variable": true,
+            "upper_bounds": 800,
+            "lower_bounds": 0
+        },
+        "turbine1_control": {
+            "type": "controlcurve",
+            "storage_node": "reservoir1",
+            "control_curve": "turbine_cc1",
+            "parameters": [
+                "turbine1_above",
+                "turbine1_below"
+            ]
+        },
+        "turbine_cc1": {
+            "type": "constant",
+            "value": 0.5
+        },
+        "turbine1_above": {
+            "type": "constant",
+            "value": 1.0,
+            "upper_bounds": 2.0,
+            "lower_bounds": 0.0,
+            "is_variable": true
+        },
+        "turbine1_below": {
+            "type": "constant",
+            "value": 0.0
+        },
+        "turbine2_control": {
+            "type": "controlcurve",
+            "storage_node": "reservoir2",
+            "control_curve": "turbine_cc2",
+            "parameters": [
+                "turbine2_above",
+                "turbine2_below"
+            ]
+        },
+        "turbine_cc2": {
+            "type": "constant",
+            "value": 0.5
+        },
+        "turbine2_above": {
+            "type": "constant",
+            "value": 1.0,
+            "upper_bounds": 2.0,
+            "lower_bounds": 0.0,
+            "is_variable": true
+        },
+        "turbine2_below": {
+            "type": "constant",
+            "value": 0.0
+        }
+    },
+    "recorders": {
+        "irrigation1_deficit_frequency": {
+            "type": "deficitfrequencynodeRecorder",
+            "node": "irrigation1",
+            "is_objective": "minimise"
+        },
+        "irrigation2_deficit_frequency": {
+            "type": "deficitfrequencynodeRecorder",
+            "node": "irrigation2",
+            "is_objective": "minimise"
+        },
+        "water_supply_deficit_frequency": {
+            "type": "deficitfrequencynodeRecorder",
+            "node": "water_supply1",
+            "is_objective": "minimise"
+        },
+        "aggregated_deficit_frequency": {
+            "type": "aggregatedrecorder",
+            "recorder_agg_func": "mean",
+            "recorders": [
+                "water_supply_deficit_frequency",
+                "irrigation1_deficit_frequency",
+                "irrigation2_deficit_frequency"
+            ],
+            "is_objective": null
+        },
+        "reservoir1_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "reservoir1_capacity",
+            "factor": 2.5
+        },
+        "reservoir2_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "reservoir2_capacity",
+            "factor": 2.5
+        },
+        "channel1_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "channel1_capacity",
+            "factor": 2.5
+        },
+        "channel2_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "channel2_capacity",
+            "factor": 2.5
+        },
+        "channel3_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "channel3_capacity",
+            "factor": 2.5
+        },
+        "channel4_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "channel4_capacity",
+            "factor": 2.5
+        },
+        "water_total_capex": {
+            "type": "aggregated",
+            "recorder_agg_func": "sum",
+            "recorders": [
+                "reservoir1_capex",
+                "reservoir2_capex",
+                "channel1_capex",
+                "channel2_capex",
+                "channel3_capex",
+                "channel4_capex"
+            ],
+            "is_objective": "minimise"
+        }
+
+    }
+}
