@@ -109,5 +109,8 @@ venv.bak/
 .idea/
 
 # Project specific
-data/
-analysis/
+/data
+water-energyM/water-energy_outputs.h5
+water-energyM/water-energy_metrics.xlsx
+water-energyM/water-energy_dataframes.h5
+.vscode
