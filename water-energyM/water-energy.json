@@ -6,13 +6,15 @@
   },
   "timestepper": {
     "start": "2015-01-01",
-    "end": "2015-12-31",
+    "end": "2019-12-31",
     "timestep": 1
   },
   "scenarios": [
     {
       "name": "weather",
-      "size": 10
+      "size": 10,
+      "slice": [0, 10],
+      "comment": "scenario_combinations:[0] or slice: [0, 1]"
     }
   ],
   "nodes": [
@@ -72,12 +74,12 @@
     {
       "name": "spill1",
       "type": "river",
-      "cost": 545
+      "cost": 5450
     },
     {
       "name": "spill2",
       "type": "river",
-      "cost": 545
+      "cost": 5450
     },
     {
       "name": "turbine1",
@@ -112,19 +114,19 @@
     {
       "name": "irrigation1",
       "type": "Output",
-      "max_flow": 5,
-      "cost": -54500
+      "max_flow": "irrigation1_demand",
+      "cost": -54500      
     },
     {
       "name": "irrigation2",
       "type": "Output",
-      "max_flow": 5,
+      "max_flow": "irrigation2_demand",
       "cost": -54500
     },
     {
       "name": "water_supply1",
       "type": "Output",
-      "max_flow": 5,
+      "max_flow": "water_supply1_demand",
       "cost": -54500
     },
     {
@@ -142,19 +144,19 @@
     {
       "name": "thermal1",
       "type": "input",
-      "cost": 500,
+      "cost": 700,
       "max_flow": "thermal1_capacity"
     },
     {
       "name": "thermal2",
       "type": "input",
-      "cost": 200,
+      "cost": 800,
       "max_flow": "thermal2_capacity"
     },
     {
       "name": "thermal3",
       "type": "input",
-      "cost": 500,
+      "cost": 900,
       "max_flow": "thermal3_capacity"
     },
     {
@@ -170,14 +172,14 @@
     {
       "name": "energy_demand1",
       "type": "output",
-      "max_flow": 600,
-      "cost": -1000
+      "max_flow": "energy1_demand",
+      "cost": -10000
     },
     {
       "name": "energy_demand2",
       "type": "output",
-      "max_flow": 600,
-      "cost": -1000
+      "max_flow": "energy2_demand",
+      "cost": -10000
     },
     {
       "name": "bus1",
@@ -412,6 +414,36 @@
       "scenario": "weather",
       "key": "catchment5_cntr"
     },
+    "irrigation1_demand": {
+      "type": "dataframe",
+      "url": "../data/we-demand_data.xls",
+      "index_col": "timestamp",
+      "column": "Dirrigation1_demand"
+    },
+    "irrigation2_demand": {
+      "type": "dataframe",
+      "url": "../data/we-demand_data.xls",
+      "index_col": "timestamp",
+      "column": "Dirrigation2_demand"
+    },
+    "water_supply1_demand": {
+      "type": "dataframe",
+      "url": "../data/we-demand_data.xls",
+      "index_col": "timestamp",
+      "column": "Dwater-supply1_demand"
+    },
+    "energy1_demand": {
+      "type": "dataframe",
+      "url": "../data/we-demand_data.xls",
+      "index_col": "timestamp",
+      "column": "Denergy1_demand"
+    },
+    "energy2_demand": {
+      "type": "dataframe",
+      "url": "../data/we-demand_data.xls",
+      "index_col": "timestamp",
+      "column": "Denergy2_demand"
+    },
     "channel1_capacity": {
       "type": "constant",
       "value": 10,
@@ -428,14 +460,14 @@
     },
     "channel3_capacity": {
       "type": "constant",
-      "value": 10,
+      "value": 15,
       "is_variable": true,
-      "upper_bounds": 15,
+      "upper_bounds": 20,
       "lower_bounds": 0
     },
     "channel4_capacity": {
       "type": "constant",
-      "value": 10,
+      "value": 5,
       "is_variable": true,
       "upper_bounds": 15,
       "lower_bounds": 0
@@ -444,14 +476,14 @@
       "type": "constant",
       "value": 900,
       "is_variable": true,
-      "upper_bounds": 1000,
+      "upper_bounds": 1500,
       "lower_bounds": 0
     },
     "reservoir2_capacity": {
       "type": "constant",
       "value": 600,
       "is_variable": true,
-      "upper_bounds": 800,
+      "upper_bounds": 1500,
       "lower_bounds": 0
     },
     "turbine1_control": {
@@ -469,8 +501,8 @@
     },
     "turbine1_above": {
       "type": "constant",
-      "value": 1.0,
-      "upper_bounds": 2.0,
+      "value": 10,
+      "upper_bounds": 20,
       "lower_bounds": 0.0,
       "is_variable": true
     },
@@ -493,8 +525,8 @@
     },
     "turbine2_above": {
       "type": "constant",
-      "value": 1.0,
-      "upper_bounds": 2.0,
+      "value": 10,
+      "upper_bounds": 20,
       "lower_bounds": 0.0,
       "is_variable": true
     },
@@ -504,44 +536,44 @@
     },
     "thermal1_capacity": {
       "type": "constant",
-      "value": 500,
+      "value": 700,
       "is_variable": true,
-      "upper_bounds": 900,
+      "upper_bounds": 1500,
       "lower_bounds": 0
     },
     "thermal2_capacity": {
       "type": "constant",
-      "value": 200,
+      "value": 800,
       "is_variable": true,
-      "upper_bounds": 700,
+      "upper_bounds": 1500,
       "lower_bounds": 0
     },
     "thermal3_capacity": {
       "type": "constant",
-      "value": 500,
+      "value": 900,
       "is_variable": true,
-      "upper_bounds": 800,
+      "upper_bounds": 1500,
       "lower_bounds": 0
     },
     "turbine1_capacity": {
       "type": "constant",
-      "value": 500,
+      "value": 700,
       "is_variable": true,
-      "upper_bounds": 800,
+      "upper_bounds": 1090,
       "lower_bounds": 0
     },
     "turbine2_capacity": {
       "type": "constant",
-      "value": 500,
+      "value": 600,
       "is_variable": true,
-      "upper_bounds": 800,
+      "upper_bounds": 1090,
       "lower_bounds": 0
     },
     "transmission_capacity": {
       "type": "constant",
-      "value": 900,
+      "value": 800,
       "is_variable": true,
-      "upper_bounds": 900,
+      "upper_bounds": 1500,
       "lower_bounds": 0
     }
   },
@@ -574,32 +606,32 @@
     "reservoir1_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "reservoir1_capacity",
-      "factor": 2.5
+      "factor": 215244
     },
     "reservoir2_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "reservoir2_capacity",
-      "factor": 2.5
+      "factor": 215244
     },
     "channel1_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "channel1_capacity",
-      "factor": 2.5
+      "factor": 2152
     },
     "channel2_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "channel2_capacity",
-      "factor": 2.5
+      "factor": 2152
     },
     "channel3_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "channel3_capacity",
-      "factor": 2.5
+      "factor": 2152
     },
     "channel4_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "channel4_capacity",
-      "factor": 2.5
+      "factor": 2152
     },
     "water_total_capex": {
       "type": "aggregated",
@@ -617,32 +649,32 @@
     "thermal1_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "thermal1_capacity",
-      "factor": 2.5
+      "factor": 334514.5
     },
     "thermal2_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "thermal2_capacity",
-      "factor": 2.5
+      "factor": 62649.9
     },
     "thermal3_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "thermal3_capacity",
-      "factor": 2.5
+      "factor": 130198.7
     },
     "turbine1_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "turbine1_capacity",
-      "factor": 2.5
+      "factor": 92247.5
     },
     "turbine2_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "turbine2_capacity",
-      "factor": 2.5
+      "factor": 92247.5
     },
     "transmission_capex": {
       "type": "MeanParameterRecorder",
       "parameter": "transmission_capacity",
-      "factor": 2.5
+      "factor": 1301
     },
     "energy_total_capex": {
       "type": "aggregated",
@@ -660,17 +692,17 @@
     "thermal1_opex": {
       "type": "TotalFlowNodeRecorder",
       "node": "thermal1",
-      "factor": 500
+      "factor": 48
     },
     "thermal2_opex": {
       "type": "TotalFlowNodeRecorder",
       "node": "thermal2",
-      "factor": 200
+      "factor": 214
     },
     "thermal3_opex": {
       "type": "TotalFlowNodeRecorder",
       "node": "thermal3",
-      "factor": 300
+      "factor": 111
     },
     "energy_total_opex": {
       "type": "aggregated",
@@ -692,7 +724,7 @@
     },
     "aggregated_energy_deficit_frequency": {
       "type": "aggregatedrecorder",
-      "recorder_agg_func": "sum",
+      "recorder_agg_func": "mean",
       "recorders": [
         "energy1_deficit_frequency",
         "energy2_deficit_frequency"
