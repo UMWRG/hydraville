@@ -109,14 +109,6 @@ venv.bak/
 .idea/
 
 # Project specific
-/data/catchmod_flows_by_catchment_sub010.h5
-/data/catchmod_flows_by_catchment_sub025.h5
-/data/catchmod_flows_by_catchment_sub050.h5
-/data/catchmod_flows_by_catchment_sub100.h5
-/data/catchmod_flows_by_catchment_sub200.h5
-/data/flow.h5
-water-energyM/water-energy_outputs.h5
-water-energyM/water-energy_metrics.xlsx
-water-energyM/water-energy_dataframes.h5
+/data/*.h5
+/data/*.xls
 .vscode
-/water-energyM/outputs
