@@ -1,20 +1,20 @@
 {
     "nodes": [{
-            "name": "turbine_energy_generation1",
+            "name": "hydropower1_energy_generation",
             "type": "aggregatednode",
             "nodes": [
-                "turbine1",
-                "hydropower_turbine1"
+                "hydropower_plant1_generation",
+                "hydropower_plant1"
             ],
             "factors": [1.0, 54.5],
             "comment": "Turbine factor = [flow -> m3/s]*[g]*[head]*[density]*[convert -> MWh/day] (1e6 / 3600 / 24) * 9.81 * 20 * 1000 * 24 * (1 / 1e6) = 9.81 * 20 / 3.6 = 54.5"
         },
         {
-            "name": "turbine_energy_generation2",
+            "name": "hydropower2_energy_generation",
             "type": "aggregatednode",
             "nodes": [
-                "turbine2",
-                "hydropower_turbine2"
+                "hydropower_plant2_generation",
+                "hydropower_plant2"
             ],
             "factors": [1.0, 54.5],
             "comment": "Turbine factor = [flow -> m3/s]*[g]*[head]*[density]*[convert -> MWh/day] (1e6 / 3600 / 24) * 9.81 * 20 * 1000 * 24 * (1 / 1e6) = 9.81 * 20 / 3.6 = 54.5"
