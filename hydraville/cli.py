@@ -156,7 +156,7 @@ def postprocess(filename):
     plt.rcParams.update({'figure.max_open_warning': 0})
 
     directory, base_ext = os.path.split(filename)
-    output_directory = os.path.join(directory, 'outputs\\figures')
+    output_directory = os.path.join(directory, 'outputs', 'figures')
   
     with tables.open_file(filename) as fl:
         tbl = fl._get_node('/time')
