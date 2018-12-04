@@ -42,6 +42,10 @@
           "type": "river"
         },
         {
+          "name": "river5",
+          "type": "river"
+        },
+        {
           "name": "reservoir1",
           "type": "storage",
           "initial_volume": 200,
@@ -233,10 +237,18 @@
         ],
         [
           "catchment5",
+          "river5"
+        ],
+        [
+          "river5",
           "irrigation2"
         ],
         [
           "return_flow_irrigation2",
+          "river4"
+        ],
+        [
+          "river5",
           "river4"
         ],
         [
