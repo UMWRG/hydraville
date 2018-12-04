@@ -1,4 +1,5 @@
 from jinja2 import Template
+import pandas
 import numpy as np
 import json
 import os
@@ -7,7 +8,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def make_model(template, networks, ensembles=None, seed=None, timestepper_kwargs=None, **kwargs):
+def make_model(template, networks, ensembles=None, seed=None, timestepper_kwargs=None,
+               embed_external_data=False, **kwargs):
     """ Create a model from a skeleton template and several other networks. """
     filename = os.path.join(DATA_DIR, template)
 
@@ -30,6 +32,9 @@ def make_model(template, networks, ensembles=None, seed=None, timestepper_kwargs
 
     if timestepper_kwargs is not None:
         update_timestepper(data, **timestepper_kwargs)
+
+    if embed_external_data:
+        data = embed_dataframes(data, path=os.path.dirname(filename))
 
     return data
 
@@ -90,3 +95,46 @@ def update_timestepper(data, **kwargs):
         logger.info('Setting timestepper {} to: "{}"'.format(key, value))
         data['timestepper'][key] = value
 
+
+def embed_dataframes(data, path=None):
+    """  """
+
+    params_to_remove = []
+    params_data = {}
+    for param_name, param in data['parameters'].items():
+
+        if param['type'].lower() != 'dataframe':
+            continue
+
+        assert param['url'].endswith('.h5')
+        assert 'key' in param
+
+        url = param['url']
+        if path is not None:
+            url = os.path.join(path, '..', url)
+
+        df = pandas.read_hdf(url, param['key'])
+        # Take only the first column/scenario of data
+        df = df.iloc[:, 0]
+        df.index = df.index.astype(str)
+
+        params_data[param_name] = json.loads(df.to_json(orient='columns'))
+        params_to_remove.append(param_name)
+
+    for node in data['nodes']:
+        for attr_name, attr_data in node.items():
+            if attr_name in ('name', 'type'):
+                continue
+
+            # Embed the dataframe data in the node directly
+            if isinstance(attr_data, str) and attr_data in params_data:
+                node[attr_name] = {
+                    'type': 'embeddeddataframe',
+                    'data': params_data[attr_data]
+                }
+
+    # Now remove the separate parameters
+    for param_name in params_to_remove:
+        data['parameters'].pop(param_name)
+
+    return data

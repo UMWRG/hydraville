@@ -1,8 +1,9 @@
-from pywr.parameters import Parameter, load_dataframe, load_parameter
+from pywr.parameters import Parameter, load_dataframe, load_parameter, DataFrameParameter
 from pywr.parameters._parameters import wrap_const
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy import stats
+import pandas
 
 
 class DistributionParameter(Parameter):
@@ -189,3 +190,14 @@ class RollingCountOfIndexParameter(Parameter):
         index_parameter = load_parameter(model, data.pop('index_parameter'))
         return cls(model, index_parameter, **data)
 RollingCountOfIndexParameter.register()
+
+
+class EmbeddedDataframe(DataFrameParameter):
+    @classmethod
+    def load(cls, model, data):
+        scenario = data.pop('scenario', None)
+        if scenario is not None:
+            scenario = model.scenarios[scenario]
+        df = pandas.DataFrame.from_dict(data.pop('data'), orient='index')
+        return cls(model, df, scenario=scenario, **data)
+EmbeddedDataframe.register()

@@ -61,10 +61,12 @@ def _create_model_from_context(context):
     ensembles = context.get('ensembles')
     seed = context.get('seed')
     model_options = context.get('model_options')
+    embed_external_data = context.get('embed_external_data', False)
 
     data = make_model(ensembles=ensembles, seed=seed,
                       parameter_templates=parameter_templates,
                       parameter_template_options=parameter_template_options,
+                      embed_external_data=embed_external_data,
                       **model_options
                       )
 
@@ -83,8 +85,9 @@ def _create_model_from_context(context):
 @click.option('-d', '--dmu', type=click.Choice(DMU_OPTIONS.keys()), default=None)
 @click.option('-e', '--ensembles', type=int, default=None)
 @click.option('-s', '--seed', type=int, default=None)
+@click.option('--embed-data/--no-embed-data', default=False)
 @click.pass_obj
-def create(obj, out, model, dmu, ensembles, seed):
+def create(obj, out, model, dmu, ensembles, seed, embed_data):
     """ Create the Pywr JSON for a particular model configuration. """
     obj['out'] = out
     obj['model_options'] = MODEL_OPTIONS[model]
@@ -97,6 +100,7 @@ def create(obj, out, model, dmu, ensembles, seed):
 
     obj['ensembles'] = ensembles
     obj['seed'] = seed
+    obj['embed_external_data'] = embed_data
     _create_model_from_context(obj)
 
 
