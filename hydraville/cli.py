@@ -4,6 +4,8 @@ import pandas
 from pywr.model import Model
 from pywr.recorders import TablesRecorder
 from pywr.recorders.progress import ProgressRecorder
+from matplotlib    import pyplot   as plt
+import tables
 import numpy as np
 import json
 import random
@@ -146,6 +148,67 @@ def run(filename):
             store[f'{rec.name}_values'] = pandas.Series(values)
 
     store.close()
+
+@cli.command()
+@click.argument('filename', type=click.Path(file_okay=True, dir_okay=False, exists=True))
+def postprocess(filename):
+
+    plt.rcParams.update({'figure.max_open_warning': 0})
+
+    directory, base_ext = os.path.split(filename)
+    output_directory = os.path.join(directory, 'outputs', 'figures')
+  
+    with tables.open_file(filename) as fl:
+        tbl = fl._get_node('/time')
+        date_index = pandas.to_datetime({k: tbl.col(k) for k in ('year','month','day')})
+        data = {}
+        for ca in fl.walk_nodes('/', 'CArray'):
+            data[ca._v_name] = pandas.DataFrame(ca.read(), index=date_index)
+
+    df = pandas.concat(data, axis=1)
+    
+    FLOW_UNITS   = 'm^3'
+    ENERGY_UNITS = 'MWh'
+    PERCENTILES  = np.linspace(0,100)
+
+    Y_LABEL_MAP = {
+        'catchment1'   : f'Catchment 1 inflow [${FLOW_UNITS}/day$]',
+        'catchment2'   : f'Catchment 2 inflow [${FLOW_UNITS}/day$]',
+        'catchment3'   : f'Catchment 3 inflow [${FLOW_UNITS}/day$]',
+        'catchment4'   : f'Catchment 4 inflow [${FLOW_UNITS}/day$]',
+        'catchment5'   : f'Catchment 5 inflow [${FLOW_UNITS}/day$]',
+        'irrigation1'  : f'Irrigation Sector 1 [${FLOW_UNITS}/day$]',
+        'irrigation2'  : f'Irrigation Sector 2 [${FLOW_UNITS}/day$]',
+        'water_supply1': f'Water Supply [${FLOW_UNITS}/day$]',
+        'reservoir1'   : f'Reservoir 1 Storage [${FLOW_UNITS}$]',
+        'reservoir2'   : f'Reservoir 2 Storage [${FLOW_UNITS}$]',
+        'turbine_energy_generation1': f'Hydropower 1 [${ENERGY_UNITS}$]',
+        'turbine_energy_generation2': f'Hydropower 2 [${ENERGY_UNITS}$]',
+        'thermal1'     : f'Thermal plant 1 [${ENERGY_UNITS}$]',
+        'thermal2'     : f'Thermal plant 2 [${ENERGY_UNITS}$]',
+        'thermal3'     : f'Thermal plant 3 [${ENERGY_UNITS}$]',
+    }
+
+# TODO check this and make automatic with the labels
+#    dfkeys         = list(df.columns.levels[0])
+#    dickeys        = list(Y_LABEL_MAP.keys())
+#    keys_to_remove = [item for item in dfkeys if item not in dickeys]
+#    df2 = df.drop(columns=keys_to_revove, axis=1)
+
+    nrows = len(df.columns.levels[0])
+
+    for node in df.columns.levels[0]:
+        fig, ax = plt.subplots(nrows=1, figsize=(12,4))
+        df[node].plot(ax=ax, color='grey', alpha=0.5, legend=False)
+        
+        try: 
+            label = Y_LABEL_MAP[node]
+        except KeyError:
+            label = node
+        ax.set_ylabel(label)
+        plt.tight_layout()
+        fig.savefig(os.path.join(output_directory, f'{node}.png'), dpi = 300)
+        fig.savefig(os.path.join(output_directory, f'{node}.eps'))
 
 
 @cli.command()

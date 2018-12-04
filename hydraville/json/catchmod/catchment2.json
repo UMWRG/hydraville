@@ -1,46 +1,45 @@
 {
-  "name" : "catchment2",
-  "class": "OudinCatchment",
-  "latitude": 52.0,
-  "subcatchments" : [
-    {
-      "name" : "Aquifers",
-      "area" : 2500.0,
-      "potential_drying_constant": 80.0,
-      "gradient_drying_curve": 0.3,
-      "direct_percolation": 20.0,
-      "initial_upper_deficit" : 0.0,
-      "initial_lower_deficit" : 0.0,
-      "linear_storage_constant" : 15.0,
-      "nonlinear_storage_constant" : 150.0,
-      "initial_linear_outflow" : 0.0,
-      "initial_nonlinear_outflow" : 0.0
-    },
-    {
-      "name" : "Clay",
-      "area" : 5000.0,
-      "potential_drying_constant": 100.0,
-      "gradient_drying_curve": 0.3,
-      "direct_percolation": 0.0,
-      "initial_upper_deficit" : 0.0,
-      "initial_lower_deficit" : 0.0,
-      "linear_storage_constant" : 2.0,
-      "nonlinear_storage_constant" : 2.0,
-      "initial_linear_outflow" : 0.0,
-      "initial_nonlinear_outflow" : 0.0
-    },
-    {
-      "name" : "Urban",
-      "area" : 50.0,
-      "potential_drying_constant": 0.0,
-      "gradient_drying_curve": 0.3,
-      "direct_percolation": 0.5,
-      "initial_upper_deficit" : 0.0,
-      "initial_lower_deficit" : 0.0,
-      "linear_storage_constant" : 0.5,
-      "nonlinear_storage_constant" : 0.25,
-      "initial_linear_outflow" : 0.0,
-      "initial_nonlinear_outflow" : 0.0
-    }
-  ]
+    "name": "catchment2",
+    "class": "OudinCatchment",
+    "latitude": 52.0,
+    "subcatchments": [{
+            "name": "Aquifers",
+            "area": 900,
+            "potential_drying_constant": 20.0,
+            "gradient_drying_curve": 0.3,
+            "direct_percolation": 20.0,
+            "initial_upper_deficit": 0.0,
+            "initial_lower_deficit": 0.0,
+            "linear_storage_constant": 150.0,
+            "nonlinear_storage_constant": 80.0,
+            "initial_linear_outflow": 0.0,
+            "initial_nonlinear_outflow": 0.0
+        },
+        {
+            "name": "Clay",
+            "area": 900,
+            "potential_drying_constant": 15.0,
+            "gradient_drying_curve": 0.3,
+            "direct_percolation": 10.0,
+            "initial_upper_deficit": 0.0,
+            "initial_lower_deficit": 0.0,
+            "linear_storage_constant": 20.0,
+            "nonlinear_storage_constant": 5.0,
+            "initial_linear_outflow": 0.0,
+            "initial_nonlinear_outflow": 0.0
+        },
+        {
+            "name": "Urban",
+            "area": 0.0,
+            "potential_drying_constant": 0.0,
+            "gradient_drying_curve": 0.0,
+            "direct_percolation": 0.0,
+            "initial_upper_deficit": 0.0,
+            "initial_lower_deficit": 0.0,
+            "linear_storage_constant": 0.0,
+            "nonlinear_storage_constant": 0.0,
+            "initial_linear_outflow": 0.0,
+            "initial_nonlinear_outflow": 0.0
+        }
+    ]
 }

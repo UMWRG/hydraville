@@ -109,5 +109,6 @@ venv.bak/
 .idea/
 
 # Project specific
-data/
-analysis/
+/data/*.h5
+.vscode
+/water-energy_without-OR
