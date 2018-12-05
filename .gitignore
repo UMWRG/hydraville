@@ -112,3 +112,4 @@ venv.bak/
 /data/*.h5
 .vscode
 /water-energy_without-OR
+/test
