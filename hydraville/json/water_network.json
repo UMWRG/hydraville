@@ -424,17 +424,17 @@
         "irrigation1_deficit_frequency": {
           "type": "deficitfrequencynodeRecorder",
           "node": "irrigation1",
-          "is_objective": "minimise"
+          "is_objective": null
         },
         "irrigation2_deficit_frequency": {
           "type": "deficitfrequencynodeRecorder",
           "node": "irrigation2",
-          "is_objective": "minimise"
+          "is_objective": null
         },
         "water_supply_deficit_frequency": {
           "type": "deficitfrequencynodeRecorder",
           "node": "water_supply1",
-          "is_objective": "minimise"
+          "is_objective": null
         },
         "aggregated_deficit_frequency": {
           "type": "aggregatedrecorder",
@@ -444,7 +444,7 @@
             "irrigation1_deficit_frequency",
             "irrigation2_deficit_frequency"
           ],
-          "is_objective": null
+          "is_objective": "minimise"
         },
         "reservoir1_capex": {
           "type": "MeanParameterRecorder",
