@@ -4,7 +4,7 @@
     "latitude": 52.0,
     "subcatchments": [{
             "name": "Aquifers",
-            "area": 200,
+            "area": 300,
             "potential_drying_constant": 30.0,
             "gradient_drying_curve": 0.3,
             "direct_percolation": 30.0,
@@ -17,7 +17,7 @@
         },
         {
             "name": "Clay",
-            "area": 200,
+            "area": 300,
             "potential_drying_constant": 30.0,
             "gradient_drying_curve": 0.3,
             "direct_percolation": 30.0,
@@ -30,7 +30,7 @@
         },
         {
             "name": "Urban",
-            "area": 75.0,
+            "area": 90,
             "potential_drying_constant": 30.0,
             "gradient_drying_curve": 0.3,
             "direct_percolation": 30.0,
