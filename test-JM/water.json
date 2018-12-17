@@ -1,0 +1,784 @@
+{
+    "metadata": {
+        "title": "Water Network Integrated pywr-MOEA",
+        "description": "Model to test the concept of couple a water-energy simulation model with an expansion planning MOEA model",
+        "minimum_version": "0.5"
+    },
+    "timestepper": {
+        "start": "2015-01-01",
+        "end": "2019-12-31",
+        "timestep": 1
+    },
+    "scenarios": [{
+        "name": "weather",
+        "size": 10,
+        "slice": [
+            0,
+            10
+        ],
+        "comment": "scenario_comninations: [0] or slice: [0,1]"
+    }],
+    "nodes": [{
+            "name": "catchment1",
+            "type": "catchment",
+            "flow": "catchment1_inflow"
+        },
+        {
+            "name": "catchment2",
+            "type": "catchment",
+            "flow": "catchment2_inflow"
+        },
+        {
+            "name": "catchment3",
+            "type": "catchment",
+            "flow": "catchment3_inflow"
+        },
+        {
+            "name": "catchment4",
+            "type": "catchment",
+            "flow": "catchment4_inflow"
+        },
+        {
+            "name": "catchment5",
+            "type": "catchment",
+            "flow": "catchment5_inflow"
+        },
+        {
+            "name": "river1",
+            "type": "river"
+        },
+        {
+            "name": "river2",
+            "type": "river"
+        },
+        {
+            "name": "river3",
+            "type": "river"
+        },
+        {
+            "name": "river4",
+            "type": "river"
+        },
+        {
+            "name": "river5",
+            "type": "river"
+        },
+        {
+            "name": "reservoir1",
+            "type": "storage",
+            "initial_volume": 200,
+            "max_volume": "reservoir1_capacity"
+        },
+        {
+            "name": "reservoir2",
+            "type": "storage",
+            "initial_volume": 200,
+            "max_volume": "reservoir2_capacity"
+        },
+        {
+            "name": "spill1",
+            "type": "river",
+            "cost": 10000
+        },
+        {
+            "name": "spill2",
+            "type": "river",
+            "cost": 10000
+        },
+        {
+            "name": "hydropower_plant1_generation",
+            "type": "river",
+            "max_flow": "hydropower_plant1_control"
+        },
+        {
+            "name": "hydropower_plant2_generation",
+            "type": "river",
+            "max_flow": "hydropower_plant2_control"
+        },
+        {
+            "name": "irrigation1_canal1",
+            "type": "link",
+            "max_flow": "canal1_capacity"
+        },
+        {
+            "name": "irrigation1_canal2",
+            "type": "link",
+            "max_flow": "canal2_capacity"
+        },
+        {
+            "name": "irrigation2_canal3",
+            "type": "link",
+            "max_flow": "canal3_capacity"
+        },
+        {
+            "name": "water_supply1_canal4",
+            "type": "link",
+            "max_flow": "canal4_capacity"
+        },
+        {
+            "name": "irrigation1",
+            "type": "Output",
+            "max_flow": "irrigation1_demand",
+            "cost": -1000000
+        },
+        {
+            "name": "return_flow_irrigation1",
+            "type": "input"
+        },
+        {
+            "name": "irrigation1_return_ratio",
+            "type": "aggregatednode",
+            "factors": [
+                1,
+                0.15
+            ],
+            "nodes": [
+                "irrigation1",
+                "return_flow_irrigation1"
+            ]
+        },
+        {
+            "name": "irrigation2",
+            "type": "Output",
+            "max_flow": "irrigation2_demand",
+            "cost": -1000000
+        },
+        {
+            "name": "return_flow_irrigation2",
+            "type": "input"
+        },
+        {
+            "name": "irrigation2_return_ratio",
+            "type": "aggregatednode",
+            "factors": [
+                1,
+                0.15
+            ],
+            "nodes": [
+                "irrigation2",
+                "return_flow_irrigation2"
+            ]
+        },
+        {
+            "name": "water_supply1",
+            "type": "Output",
+            "max_flow": "water_supply1_demand",
+            "cost": -1000000
+        },
+        {
+            "name": "term1",
+            "type": "output"
+        },
+        {
+            "name": "coal_power_plant",
+            "type": "input",
+            "cost": 48,
+            "max_flow": "coal_power_plant_capacity"
+        },
+        {
+            "name": "oil_power_plant",
+            "type": "input",
+            "cost": 214,
+            "max_flow": "oil_power_plant_capacity"
+        },
+        {
+            "name": "LNG_power_plant",
+            "type": "input",
+            "cost": 111,
+            "max_flow": "LNG_power_plant_capacity"
+        },
+        {
+            "name": "hydropower_plant1",
+            "type": "input",
+            "max_flow": "hydropower_plant1_capacity"
+        },
+        {
+            "name": "hydropower_plant2",
+            "type": "input",
+            "max_flow": "hydropower_plant2_capacity"
+        },
+        {
+            "name": "energy_demand_city1",
+            "type": "output",
+            "max_flow": "energy_demand_c1",
+            "cost": -10000
+        },
+        {
+            "name": "energy_demand_city2",
+            "type": "output",
+            "max_flow": "energy_demand_c2",
+            "cost": -10000
+        },
+        {
+            "name": "substation_s1",
+            "type": "link"
+        },
+        {
+            "name": "substation_s2",
+            "type": "link"
+        },
+        {
+            "name": "transmission_line_s1s2",
+            "type": "link",
+            "max_flow": "transmission_line_capacity"
+        },
+        {
+            "name": "hydropower1_energy_generation",
+            "type": "aggregatednode",
+            "nodes": [
+                "hydropower_plant1_generation",
+                "hydropower_plant1"
+            ],
+            "factors": [
+                1.0,
+                54.5
+            ],
+            "comment": "Turbine factor = [flow -> m3/s]*[g]*[head]*[density]*[convert -> MWh/day] (1e6 / 3600 / 24) * 9.81 * 20 * 1000 * 24 * (1 / 1e6) = 9.81 * 20 / 3.6 = 54.5"
+        },
+        {
+            "name": "hydropower2_energy_generation",
+            "type": "aggregatednode",
+            "nodes": [
+                "hydropower_plant2_generation",
+                "hydropower_plant2"
+            ],
+            "factors": [
+                1.0,
+                54.5
+            ],
+            "comment": "Turbine factor = [flow -> m3/s]*[g]*[head]*[density]*[convert -> MWh/day] (1e6 / 3600 / 24) * 9.81 * 20 * 1000 * 24 * (1 / 1e6) = 9.81 * 20 / 3.6 = 54.5"
+        }
+    ],
+    "edges": [
+        [
+            "catchment1",
+            "river1"
+        ],
+        [
+            "river1",
+            "irrigation1_canal1"
+        ],
+        [
+            "irrigation1_canal1",
+            "irrigation1"
+        ],
+        [
+            "return_flow_irrigation1",
+            "river2"
+        ],
+        [
+            "river1",
+            "river2"
+        ],
+        [
+            "catchment3",
+            "river2"
+        ],
+        [
+            "river2",
+            "reservoir2"
+        ],
+        [
+            "catchment2",
+            "reservoir1"
+        ],
+        [
+            "reservoir1",
+            "irrigation1_canal2"
+        ],
+        [
+            "irrigation1_canal2",
+            "irrigation1"
+        ],
+        [
+            "reservoir1",
+            "spill1"
+        ],
+        [
+            "reservoir1",
+            "hydropower_plant1_generation"
+        ],
+        [
+            "spill1",
+            "river3"
+        ],
+        [
+            "hydropower_plant1_generation",
+            "river3"
+        ],
+        [
+            "river3",
+            "reservoir2"
+        ],
+        [
+            "catchment4",
+            "reservoir2"
+        ],
+        [
+            "reservoir2",
+            "water_supply1_canal4"
+        ],
+        [
+            "water_supply1_canal4",
+            "water_supply1"
+        ],
+        [
+            "reservoir2",
+            "hydropower_plant2_generation"
+        ],
+        [
+            "hydropower_plant2_generation",
+            "river4"
+        ],
+        [
+            "reservoir2",
+            "irrigation2_canal3"
+        ],
+        [
+            "irrigation2_canal3",
+            "irrigation2"
+        ],
+        [
+            "catchment5",
+            "river5"
+        ],
+        [
+            "river5",
+            "irrigation2"
+        ],
+        [
+            "return_flow_irrigation2",
+            "river4"
+        ],
+        [
+            "river5",
+            "river4"
+        ],
+        [
+            "reservoir2",
+            "spill2"
+        ],
+        [
+            "spill2",
+            "river4"
+        ],
+        [
+            "river4",
+            "term1"
+        ],
+        [
+            "coal_power_plant",
+            "substation_s1"
+        ],
+        [
+            "hydropower_plant1",
+            "substation_s1"
+        ],
+        [
+            "LNG_power_plant",
+            "substation_s1"
+        ],
+        [
+            "hydropower_plant2",
+            "substation_s1"
+        ],
+        [
+            "oil_power_plant",
+            "substation_s2"
+        ],
+        [
+            "substation_s1",
+            "transmission_line_s1s2"
+        ],
+        [
+            "transmission_line_s1s2",
+            "substation_s1"
+        ],
+        [
+            "transmission_line_s1s2",
+            "substation_s2"
+        ],
+        [
+            "substation_s2",
+            "transmission_line_s1s2"
+        ],
+        [
+            "substation_s1",
+            "energy_demand_city1"
+        ],
+        [
+            "substation_s2",
+            "energy_demand_city2"
+        ]
+    ],
+    "parameters": {
+        "catchment1_inflow": {
+            "type": "dataframe",
+            "url": "../../data/catchmod_flows_by_catchment_sub010.h5",
+            "scenario": "weather",
+            "key": "catchment1_cntr",
+            "comment": "units [hm^3/day]"
+        },
+        "catchment2_inflow": {
+            "type": "dataframe",
+            "url": "../../data/catchmod_flows_by_catchment_sub010.h5",
+            "scenario": "weather",
+            "key": "catchment2_cntr",
+            "comment": "units [hm^3/day]"
+        },
+        "catchment3_inflow": {
+            "type": "dataframe",
+            "url": "../../data/catchmod_flows_by_catchment_sub010.h5",
+            "scenario": "weather",
+            "key": "catchment3_cntr",
+            "comment": "units [hm^3/day]"
+        },
+        "catchment4_inflow": {
+            "type": "dataframe",
+            "url": "../../data/catchmod_flows_by_catchment_sub010.h5",
+            "scenario": "weather",
+            "key": "catchment4_cntr",
+            "comment": "units [hm^3/day]"
+        },
+        "catchment5_inflow": {
+            "type": "dataframe",
+            "url": "../../data/catchmod_flows_by_catchment_sub010.h5",
+            "scenario": "weather",
+            "key": "catchment5_cntr",
+            "comment": "units [hm^3/day]"
+        },
+        "irrigation1_demand": {
+            "type": "dataframe",
+            "url": "../../data/we-demand_data.xls",
+            "index_col": "timestamp",
+            "column": "Dirrigation1_demand",
+            "comment": "units [hm^3/day]"
+        },
+        "irrigation2_demand": {
+            "type": "dataframe",
+            "url": "../../data/we-demand_data.xls",
+            "index_col": "timestamp",
+            "column": "Dirrigation2_demand",
+            "comment": "units [hm^3/day]"
+        },
+        "water_supply1_demand": {
+            "type": "dataframe",
+            "url": "../../data/we-demand_data.xls",
+            "index_col": "timestamp",
+            "column": "Dwater-supply1_demand",
+            "comment": "units [hm^3/day]"
+        },
+        "canal1_capacity": {
+            "type": "constant",
+            "value": 1.5,
+            "is_variable": false,
+            "upper_bounds": 1.5,
+            "lower_bounds": 0,
+            "comment": "units [hm^3/day]"
+        },
+        "canal2_capacity": {
+            "type": "constant",
+            "value": 0.0,
+            "is_variable": true,
+            "upper_bounds": 6.0,
+            "lower_bounds": 0,
+            "comment": "units [hm^3/day]"
+        },
+        "canal3_capacity": {
+            "type": "constant",
+            "value": 5.3,
+            "is_variable": false,
+            "upper_bounds": 5.3,
+            "lower_bounds": 0,
+            "comment": "units [hm^3/day]"
+        },
+        "canal4_capacity": {
+            "type": "constant",
+            "value": 1.5,
+            "is_variable": false,
+            "upper_bounds": 1.5,
+            "lower_bounds": 0,
+            "comment": "units [hm^3/day]"
+        },
+        "reservoir1_capacity": {
+            "type": "constant",
+            "value": 800,
+            "is_variable": false,
+            "upper_bounds": 800,
+            "lower_bounds": 0,
+            "comment": "units [hm^3]"
+        },
+        "reservoir2_capacity": {
+            "type": "constant",
+            "value": 0.0,
+            "is_variable": true,
+            "upper_bounds": 800,
+            "lower_bounds": 0,
+            "comment": "units [hm^3]"
+        },
+        "hydropower_plant1_control": {
+            "type": "controlcurve",
+            "storage_node": "reservoir1",
+            "control_curve": "hydropower_cc1",
+            "parameters": [
+                "hydropower1_above",
+                "hydropower1_below"
+            ]
+        },
+        "hydropower_cc1": {
+            "type": "constant",
+            "value": 0.5
+        },
+        "hydropower1_above": {
+            "type": "constant",
+            "value": 20,
+            "upper_bounds": 20,
+            "lower_bounds": 0.0,
+            "is_variable": true,
+            "comment": "units [hm^3/day]"
+        },
+        "hydropower1_below": {
+            "type": "constant",
+            "value": 0.0
+        },
+        "hydropower_plant2_control": {
+            "type": "controlcurve",
+            "storage_node": "reservoir2",
+            "control_curve": "hydropower_cc2",
+            "parameters": [
+                "hydropower2_above",
+                "hydropower2_below"
+            ]
+        },
+        "hydropower_cc2": {
+            "type": "constant",
+            "value": 0.5
+        },
+        "hydropower2_above": {
+            "type": "constant",
+            "value": 20,
+            "upper_bounds": 20,
+            "lower_bounds": 0.0,
+            "is_variable": true,
+            "comment": "units [hm^3/day]"
+        },
+        "hydropower2_below": {
+            "type": "constant",
+            "value": 0.0
+        },
+        "energy_demand_c1": {
+            "type": "dataframe",
+            "url": "../../data/we-demand_data.xls",
+            "index_col": "timestamp",
+            "column": "energy_demand1",
+            "comment": "units [MWh]"
+        },
+        "energy_demand_c2": {
+            "type": "dataframe",
+            "url": "../../data/we-demand_data.xls",
+            "index_col": "timestamp",
+            "column": "energy_demand2",
+            "comment": "units [MWh]"
+        },
+        "coal_power_plant_capacity": {
+            "type": "constant",
+            "value": 900,
+            "is_variable": false,
+            "upper_bounds": 900,
+            "lower_bounds": 0,
+            "comment": "units [MW]"
+        },
+        "oil_power_plant_capacity": {
+            "type": "constant",
+            "value": 700,
+            "is_variable": false,
+            "upper_bounds": 700,
+            "lower_bounds": 0,
+            "comment": "units [MW]"
+        },
+        "LNG_power_plant_capacity": {
+            "type": "constant",
+            "value": 0,
+            "is_variable": false,
+            "upper_bounds": 1500,
+            "lower_bounds": 0,
+            "comment": "units [MW]"
+        },
+        "hydropower_plant1_capacity": {
+            "type": "constant",
+            "value": 1100,
+            "is_variable": false,
+            "upper_bounds": 1100,
+            "lower_bounds": 0,
+            "comment": "units [MW]"
+        },
+        "hydropower_plant2_capacity": {
+            "type": "constant",
+            "value": 0,
+            "is_variable": true,
+            "upper_bounds": 1100,
+            "lower_bounds": 0,
+            "comment": "units [MW]"
+        },
+        "transmission_line_capacity": {
+            "type": "constant",
+            "value": 0,
+            "is_variable": false,
+            "upper_bounds": 1500,
+            "lower_bounds": 0,
+            "comment": "units [MW]"
+        }
+    },
+    "recorders": {
+        "irrigation1_deficit_frequency": {
+            "type": "deficitfrequencynodeRecorder",
+            "node": "irrigation1"
+        },
+        "irrigation2_deficit_frequency": {
+            "type": "deficitfrequencynodeRecorder",
+            "node": "irrigation2"
+        },
+        "water_supply_deficit_frequency": {
+            "type": "deficitfrequencynodeRecorder",
+            "node": "water_supply1"
+        },
+        "aggr_water_deficit_frequency": {
+            "type": "aggregatedrecorder",
+            "recorder_agg_func": "mean",
+            "recorders": [
+                "water_supply_deficit_frequency",
+                "irrigation1_deficit_frequency",
+                "irrigation2_deficit_frequency"
+            ],
+            "is_objective": "minimise"
+        },
+
+        "reservoir2_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "reservoir2_capacity",
+            "factor": 9982,
+            "comment": "annualised cost units [$/hm^3]"
+        },
+        "canal2_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "canal2_capacity",
+            "factor": 8094058,
+            "comment": "annualised cost units [$/hm^3/day]"
+        },
+        "water_total_capex": {
+            "type": "aggregated",
+            "recorder_agg_func": "sum",
+            "recorders": [
+                "reservoir2_capex",
+                "canal2_capex"
+            ],
+            "is_objective": "minimise"
+        },
+
+        "LNG_power_plant_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "LNG_power_plant_capacity",
+            "factor": 130199,
+            "comment": "units [$/MW]"
+        },
+        "hydropower_plant2_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "hydropower_plant2_capacity",
+            "factor": 90380,
+            "comment": "units [$/MW]"
+        },
+        "transmission_line_capex": {
+            "type": "MeanParameterRecorder",
+            "parameter": "transmission_line_capacity",
+            "factor": 5484,
+            "comment": "units [$/MW]"
+        },
+        "energy_total_capex": {
+            "type": "aggregated",
+            "recorder_agg_func": "sum",
+            "recorders": [
+                "LNG_power_plant_capex",
+                "hydropower_plant2_capex",
+                "transmission_line_capex"
+            ],
+            "is_objective": "minimise"
+        },
+
+        "coal_power_plant_opex": {
+            "type": "TotalFlowNodeRecorder",
+            "node": "coal_power_plant",
+            "factor": 48,
+            "comment": "units [$/MWh]"
+        },
+        "oil_power_plant_opex": {
+            "type": "TotalFlowNodeRecorder",
+            "node": "oil_power_plant",
+            "factor": 214,
+            "comment": "units [$/MWh]"
+        },
+        "LNG_power_plant_opex": {
+            "type": "TotalFlowNodeRecorder",
+            "node": "LNG_power_plant",
+            "factor": 111,
+            "comment": "units [$/MWh]"
+        },
+        "energy_model_total_opex": {
+            "type": "aggregated",
+            "recorder_agg_func": "sum",
+            "recorders": [
+                "coal_power_plant_opex",
+                "oil_power_plant_opex",
+                "LNG_power_plant_opex"
+            ],
+            "is_objective": null
+        },
+
+        "Hydropower1_Generation":{
+            "type": "TotalFlowNodeRecorder",
+            "node": "hydropower_plant1"
+        },
+
+        "Hydropower2_Generation":{
+            "type": "TotalFlowNodeRecorder",
+            "node": "hydropower_plant2"
+        },
+
+        "aggr_Hydro_Generation":{
+            "type": "aggregated",
+            "recorder_agg_func": "sum",
+            "recorders": [
+                "Hydropower1_Generation",
+                "Hydropower2_Generation"
+            ],
+            "is_objective": "maximise"
+        },
+
+        "energy_demand_city1_deficit_frequency": {
+            "type": "deficitfrequencynodeRecorder",
+            "node": "energy_demand_city1"
+        },
+        "energy_demand_city2_deficit_frequency": {
+            "type": "deficitfrequencynodeRecorder",
+            "node": "energy_demand_city2"
+        },
+        "aggr_energy_deficit_frequency": {
+            "type": "aggregatedrecorder",
+            "recorder_agg_func": "mean",
+            "recorders": [
+                "energy_demand_city1_deficit_frequency",
+                "energy_demand_city2_deficit_frequency"
+            ],
+            "is_objective": null
+        },
+
+        "total_system_capex": {
+            "type": "aggregated",
+            "recorder_agg_func": "sum",
+            "recorders": [
+                "energy_total_capex",
+                "water_total_capex"
+            ],
+            "is_objective": null
+        }
+    }
+}
