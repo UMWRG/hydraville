@@ -67,13 +67,15 @@
             "name": "reservoir1",
             "type": "storage",
             "initial_volume": 200,
-            "max_volume": "reservoir1_capacity"
+            "max_volume": "reservoir1_capacity",
+            "cost": -10000
         },
         {
             "name": "reservoir2",
             "type": "storage",
             "initial_volume": 200,
-            "max_volume": "reservoir2_capacity"
+            "max_volume": "reservoir2_capacity",
+            "cost": -10000
         },
         {
             "name": "spill1",
@@ -669,8 +671,7 @@
             "type": "aggregated",
             "recorder_agg_func": "sum",
             "recorders": [
-                "reservoir2_capex",
-                "canal2_capex"
+                "reservoir2_capex"
             ],
             "is_objective": "minimise"
         },
@@ -722,7 +723,7 @@
             "factor": 111,
             "comment": "units [$/MWh]"
         },
-        "energy_model_total_opex": {
+        "energy_total_opex": {
             "type": "aggregated",
             "recorder_agg_func": "sum",
             "recorders": [
@@ -731,26 +732,6 @@
                 "LNG_power_plant_opex"
             ],
             "is_objective": "minimise"
-        },
-
-        "Hydropower1_Generation":{
-            "type": "TotalFlowNodeRecorder",
-            "node": "hydropower_plant1"
-        },
-
-        "Hydropower2_Generation":{
-            "type": "TotalFlowNodeRecorder",
-            "node": "hydropower_plant2"
-        },
-
-        "aggr_Hydro_Generation":{
-            "type": "aggregated",
-            "recorder_agg_func": "sum",
-            "recorders": [
-                "Hydropower1_Generation",
-                "Hydropower2_Generation"
-            ],
-            "is_objective": null
         },
 
         "energy_demand_city1_deficit_frequency": {
@@ -770,15 +751,36 @@
             ],
             "is_objective": "minimise"
         },
+        
+        "Hydropower1_MWh":{
+            "type": "TotalFlowNodeRecorder",
+            "node": "hydropower1_energy_generation"
+        },
 
-        "total_system_capex": {
+        "Hydropower2_MWh":{
+            "type": "TotalFlowNodeRecorder",
+            "node": "hydropower2_energy_generation"
+        },
+
+        "aggr_Hydropower_MWh":{
+            "type": "aggregated",
+            "recorder_agg_func": "sum",
+            "recorders": [
+                "Hydropower1_MWh",
+                "Hydropower2_MWh"
+            ],
+            "is_objective": "maximise"
+        },
+
+        "total_system_totex": {
             "type": "aggregated",
             "recorder_agg_func": "sum",
             "recorders": [
                 "energy_total_capex",
-                "water_total_capex"
+                "water_total_capex",
+                "energy_total_opex"
             ],
-            "is_objective": null
+            "is_objective": "minimise"
         }
     }
 }
