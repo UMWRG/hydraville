@@ -22,6 +22,9 @@ class PyretoJSONPlatypusWrapper(PlatypusWrapper):
         self._create_new_search_json(search_data)
         self.created_at = None
 
+    def customise_model(self, model):
+        model.solver.retry_solve = True
+
     @property
     def output_subdirectory(self):
         path = os.path.join(self.output_directory, self.uid)
