@@ -114,3 +114,4 @@ venv.bak/
 /water-energy_without-OR
 /test
 /test-JM
+*.sh
