@@ -1,6 +1,7 @@
 import click
 import os
 import pandas
+import sys
 from pywr.model import Model
 from pywr.recorders import TablesRecorder
 from pywr.recorders.progress import ProgressRecorder
@@ -240,12 +241,11 @@ def search(filename, seed, num_cpus, max_nfe, pop_size, algorithm, epsilons, div
 
     if seed is None:
         seed = random.randrange(sys.maxsize)
+    random.seed(seed)
 
     wrapper = PyretoJSONPlatypusWrapper(filename, search_data={'algorithm': algorithm, 'seed': seed,
                                                                'user_metadata':algorithm_kwargs},
                                         output_directory=output_directory)
-    if seed is not None:
-        random.seed(seed)
 
     logger.info('Starting model search.')
     if num_cpus is None:
