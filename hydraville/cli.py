@@ -223,12 +223,32 @@ def postprocess(filename):
 @click.option('-p', '--num-cpus', type=int, default=None)
 @click.option('-n', '--max-nfe', type=int, default=1000)
 @click.option('--pop-size', type=int, default=50)
-def search(filename, seed, num_cpus, max_nfe, pop_size):
+@click.option('-a', '--algorithm', type=click.Choice(['NSGAII', 'NSGAIII', 'EpsMOEA']), default='NSGAII')
+@click.option('-e', '--epsilons', multiple=True, type=float, default=(0.05, ))
+@click.option('--divisions-outer', type=int, default=12)
+def search(filename, seed, num_cpus, max_nfe, pop_size, algorithm, epsilons, divisions_outer):
     import platypus
     logger.info('Loading model from file: "{}"'.format(filename))
     directory, _ = os.path.split(filename)
     output_directory = os.path.join(directory, 'outputs')
-    wrapper = PyretoJSONPlatypusWrapper(filename, search_data={'algorithm': 'NSGAII', 'seed': seed},
+
+    if algorithm == 'NSGAII':
+        algorithm_klass = platypus.NSGAII
+        algorithm_kwargs = {'population_size': pop_size}
+    elif algorithm == 'NSGAIII':
+        algorithm_klass = platypus.NSGAIII
+        algorithm_kwargs = {'divisions_outer': divisions_outer}
+    elif algorithm == 'EpsMOEA':
+        algorithm_klass = platypus.EpsMOEA
+        algorithm_kwargs = {'population_size': pop_size, 'epsilons': epsilons}
+    else:
+        raise RuntimeError('Algorithm "{}" not supported.'.format(algorithm))
+
+    if seed is None:
+        seed = random.randrange(sys.maxsize)
+
+    wrapper = PyretoJSONPlatypusWrapper(filename, search_data={'algorithm': algorithm, 'seed': seed,
+                                                               'user_metadata':algorithm_kwargs},
                                         output_directory=output_directory)
     if seed is not None:
         random.seed(seed)
@@ -242,10 +262,8 @@ def search(filename, seed, num_cpus, max_nfe, pop_size):
         evaluator_args = (num_cpus, )
     
     with evaluator_klass(*evaluator_args) as evaluator:
-        algorithm = platypus.NSGAII(wrapper.problem, population_size=pop_size, evaluator=evaluator)
+        algorithm = algorithm_klass(wrapper.problem, evaluator=evaluator, **algorithm_kwargs)
         algorithm.run(max_nfe)
-
-    logger.info('Complete!')
 
 
 @cli.group('ukcp09')
