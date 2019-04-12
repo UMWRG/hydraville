@@ -73,10 +73,12 @@ def _create_model_from_context(context):
     # Validate the data by loading in Pywr
     out = context['out']
 
-    Model.loads(json.dumps(data), path=os.path.dirname(out))
+    str_data = json.dumps(data, indent=2)
+
+    Model.loads(str_data, path=os.path.dirname(out))
 
     with open(out, 'w') as fh:
-        json.dump(data, fh, indent=2)
+        fh.write(str_data)
 
 
 @cli.command()

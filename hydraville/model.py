@@ -106,19 +106,28 @@ def embed_dataframes(data, path=None):
         if param['type'].lower() != 'dataframe':
             continue
 
-        assert param['url'].endswith('.h5')
-        assert 'key' in param
-
         url = param['url']
+        base, ext = os.path.splitext(url)
+
         if path is not None:
             url = os.path.join(path, '..', url)
 
-        df = pandas.read_hdf(url, param['key'])
-        # Take only the first column/scenario of data
-        df = df.iloc[:, 0]
+        if ext == '.h5':
+            df = pandas.read_hdf(url, param['key'])
+            # Take only the first column/scenario of data
+            df = df.iloc[:, 0]
+        elif ext in ('.xls', '.xlsx'):
+            read_kwargs = {k: v for k, v in param.items() if k not in ('url', 'comment', 'column', 'row')}
+            df = pandas.read_excel(url, parse_dates=True, **read_kwargs)
+            if 'column' in param:
+                df = df[param['column']]
+        else:
+            raise NotImplementedError(f'Unsupported file format "{ext}" for url: {url}')
+
+        # Embed data as strings of datetimes rather than timestamps.
         df.index = df.index.astype(str)
 
-        params_data[param_name] = json.loads(df.to_json(orient='columns'))
+        params_data[param_name] = json.loads(df.to_frame().to_json())
         params_to_remove.append(param_name)
 
     for node in data['nodes']:
@@ -129,8 +138,10 @@ def embed_dataframes(data, path=None):
             # Embed the dataframe data in the node directly
             if isinstance(attr_data, str) and attr_data in params_data:
                 node[attr_name] = {
-                    'type': 'embeddeddataframe',
-                    'data': params_data[attr_data]
+                    'type': 'dataframe',
+                    'data': params_data[attr_data],
+                    'pandas_kwargs': {'parse_dates': True}
+
                 }
 
     # Now remove the separate parameters
