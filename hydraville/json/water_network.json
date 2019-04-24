@@ -3,27 +3,27 @@
     {
     "name": "catchment1",
     "type": "catchment",
-    "flow": "_catchment1_:inflow"
+    "flow": "__catchment1__:inflow"
     },
     {
     "name": "catchment2",
     "type": "catchment",
-    "flow": "_catchment2_:inflow"
+    "flow": "__catchment2__:inflow"
     },
     {
     "name": "catchment3",
     "type": "catchment",
-    "flow": "_catchment3_:inflow"
+    "flow": "__catchment3__:inflow"
     },
     {
     "name": "catchment4",
     "type": "catchment",
-    "flow": "_catchment4_:inflow"
+    "flow": "__catchment4__:inflow"
     },
     {
     "name": "catchment5",
     "type": "catchment",
-    "flow": "_catchment5_:inflow"
+    "flow": "__catchment5__:inflow"
     },
     {
     "name": "river1",
@@ -49,14 +49,14 @@
     "name": "reservoir1",
     "type": "storage",
     "initial_volume": 200,
-    "max_volume": "_reservoir1_:capacity",
+    "max_volume": "__reservoir1__:capacity",
     "cost": -200
     },
     {
     "name": "reservoir2",
     "type": "storage",
     "initial_volume": 200,
-    "max_volume": "_reservoir2_:capacity",
+    "max_volume": "__reservoir2__:capacity",
     "cost": -200
     },
     {
@@ -72,37 +72,37 @@
     {
     "name": "hydropower_plant1_generation",
     "type": "river",
-    "max_flow": "_hydropower_plant1_:control"
+    "max_flow": "__hydropower_plant1__:control"
     },
     {
     "name": "hydropower_plant2_generation",
     "type": "river",
-    "max_flow": "_hydropower_plant2_:control"
+    "max_flow": "__hydropower_plant2__:control"
     },
     {
     "name": "irrigation1_canal1",
     "type": "link",
-    "max_flow": "_canal1_:capacity"
+    "max_flow": "__canal1__:capacity"
     },
     {
     "name": "irrigation1_canal2",
     "type": "link",
-    "max_flow": "_irrigation1_:control"
+    "max_flow": "__irrigation1__:control"
     },
     {
     "name": "irrigation2_canal3",
     "type": "link",
-    "max_flow": "_irrigation2_:control"
+    "max_flow": "__irrigation2__:control"
     },
     {
     "name": "water_supply1_canal4",
     "type": "link",
-    "max_flow": "_water_supply1_:control"
+    "max_flow": "__water_supply1__:control"
     },
     {
     "name": "irrigation1",
     "type": "Output",
-    "max_flow": "_irrigation1_:demand",
+    "max_flow": "__irrigation1__:demand",
     "cost": -1000
     },
     {
@@ -124,7 +124,7 @@
     {
     "name": "irrigation2",
     "type": "Output",
-    "max_flow": "_irrigation2_:demand",
+    "max_flow": "__irrigation2__:demand",
     "cost": -1000
     },
     {
@@ -146,7 +146,7 @@
     {
     "name": "water_supply1",
     "type": "Output",
-    "max_flow": "_water_supply1_:demand",
+    "max_flow": "__water_supply1__:demand",
     "cost": -1000
     },
     {
@@ -274,35 +274,35 @@
     ]
 ],
 "parameters": {
-    "_catchment1_:inflow": {
+    "__catchment1__:inflow": {
       "type": "dataframe",
       "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
       "scenario": "weather",
       "key": "catchment1_cntr",
       "comment": "units [hm^3/day]"
       },
-    "_catchment2_:inflow": {
+    "__catchment2__:inflow": {
       "type": "dataframe",
       "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
       "scenario": "weather",
       "key": "catchment2_cntr",
       "comment": "units [hm^3/day]"
       },
-   "_catchment3_:inflow": {
+   "__catchment3__:inflow": {
      "type": "dataframe",
      "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
      "scenario": "weather",
      "key": "catchment3_cntr",
      "comment": "units [hm^3/day]"
       },
-    "_catchment4_:inflow": {
+    "__catchment4__:inflow": {
      "type": "dataframe",
      "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
      "scenario": "weather",
      "key": "catchment4_cntr",
      "comment": "units [hm^3/day]"
       },
-    "_catchment5_:inflow": {
+    "__catchment5__:inflow": {
      "type": "dataframe",
      "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
      "scenario": "weather",
@@ -321,7 +321,7 @@
      "column": "Dirrigation1_demand",
      "comment": "units [hm^3/day]"
       },
-    "_irrigation1_:demand": {
+    "__irrigation1__:demand": {
      "type": "aggregated",
      "agg_func": "product",
      "parameters": ["irr1_expected_demand",
@@ -335,7 +335,7 @@
      "column": "Dirrigation2_demand",
      "comment": "units [hm^3/day]"
       },
-    "_irrigation2_:demand": {
+    "__irrigation2__:demand": {
      "type": "aggregated",
      "agg_func": "product",
      "parameters": ["irr2_expected_demand",
@@ -349,14 +349,14 @@
      "column": "Dwater-supply1_demand",
      "comment": "units [hm^3/day]"
       },
-    "_water_supply1_:demand": {
+    "__water_supply1__:demand": {
      "type": "aggregated",
      "agg_func": "product",
      "parameters": ["water_supp_expected_demand",
                     "W_Demand_Factor"
                    ]
       },
-    "_reservoir1_:capacity": {
+    "__reservoir1__:capacity": {
      "type": "constant",
      "value": 1500,
      "is_variable": false,
@@ -364,7 +364,7 @@
      "lower_bounds": 0,
      "comment": "units [hm^3]"
       },
-    "_reservoir2_:capacity": {
+    "__reservoir2__:capacity": {
      "type": "constant",
      "value": 0,
      "is_variable": true,
@@ -372,11 +372,11 @@
      "lower_bounds": 0,
      "comment": "units [hm^3]"
       },
-    "_irrigation1_:control": {
+    "__irrigation1__:control": {
      "type": "controlcurve",
      "storage_node": "reservoir1",
      "control_curve": "irrigation1_cc",
-     "parameters": ["_canal2_:capacity",
+     "parameters": ["__canal2__:capacity",
                     "canal_zero"
                    ]
       },
@@ -387,7 +387,7 @@
      "lower_bounds": 0.0,
      "is_variable": true
       },
-    "_canal1_:capacity": {
+    "__canal1__:capacity": {
      "type": "constant",
      "value": 1.5,
      "is_variable": false,
@@ -395,7 +395,7 @@
      "lower_bounds": 0,
      "comment": "units [hm^3/day]"
       },
-    "_canal2_:capacity": {
+    "__canal2__:capacity": {
      "type": "constant",
      "value": 0.0,
      "is_variable": true,
@@ -403,11 +403,11 @@
      "lower_bounds": 0,
      "comment": "units [hm^3/day]"
       },
-    "_irrigation2_:control": {
+    "__irrigation2__:control": {
      "type": "controlcurve",
      "storage_node": "reservoir2",
      "control_curve": "irrigation2_cc",
-     "parameters": ["_canal3_:capacity",
+     "parameters": ["__canal3__:capacity",
                     "canal_zero"
                    ]
       },
@@ -418,7 +418,7 @@
      "lower_bounds": 0.0,
      "is_variable": true
       },
-    "_canal3_:capacity": {
+    "__canal3__:capacity": {
      "type": "constant",
      "value": 9.0,
      "is_variable": false,
@@ -426,11 +426,11 @@
      "lower_bounds": 0,
      "comment": "units [hm^3/day]"
       },
-    "_water_supply1_:control": {
+    "__water_supply1__:control": {
      "type": "controlcurve",
      "storage_node": "reservoir2",
      "control_curve": "water_supply1_cc",
-     "parameters": ["_canal4_:capacity",
+     "parameters": ["__canal4__:capacity",
                     "canal_zero"
                    ]
       },
@@ -441,7 +441,7 @@
      "lower_bounds": 0.0,
      "is_variable": true
       },
-    "_canal4_:capacity": {
+    "__canal4__:capacity": {
      "type": "constant",
      "value": 9.0,
      "is_variable": false,
@@ -457,7 +457,7 @@
      "lower_bounds": 0.0,
      "comment": "units [hm^3/day]"
       },
-    "_hydropower_plant1_:control": {
+    "__hydropower_plant1__:control": {
      "type": "controlcurve",
      "storage_node": "reservoir1",
      "control_curve": "hydropower_cc1",
@@ -484,12 +484,12 @@
      "type": "constant",
      "value": 0.0
       },
-    "_hydropower_plant2_:control": {
+    "__hydropower_plant2__:control": {
      "type": "controlcurve",
      "storage_node": "reservoir2",
      "control_curve": "hydropower_cc2",
      "parameters": ["hydropower2_above",
-                     "hydropower2_below"
+                    "hydropower2_below"
                    ]
       },
     "hydropower_cc2": {
@@ -536,13 +536,13 @@
     },
     "reservoir2_capex": {
      "type": "MeanParameterRecorder",
-     "parameter": "_reservoir2_:capacity",
+     "parameter": "__reservoir2__:capacity",
      "factor": 9982,
      "comment": "annualised cost units [$/hm^3]"
       },
     "canal2_capex": {
      "type": "MeanParameterRecorder",
-     "parameter": "_canal2_:capacity",
+     "parameter": "__canal2__:capacity",
      "factor": 8094058,
      "comment": "annualised cost units [$/hm^3/day]"
       },

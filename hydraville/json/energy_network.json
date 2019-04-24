@@ -4,40 +4,40 @@
     "name": "thermal_plant1",
     "type": "input",
     "cost": 0.96,
-    "max_flow": "_thermal_plant1_:capacity"
+    "max_flow": "__thermal_plant1__:capacity"
     },
     {
     "name": "thermal_plant2",
     "type": "input",
     "cost": 4.28,
-    "max_flow": "_thermal_plant2_:capacity"
+    "max_flow": "__thermal_plant2__:capacity"
     },
     {
     "name": "thermal_plant3",
     "type": "input",
     "cost": 2.22,
-    "max_flow": "_thermal_plant3_:capacity"
+    "max_flow": "__thermal_plant3__:capacity"
     },
     {
     "name": "hydropower_plant1",
     "type": "input",
-    "max_flow": "_hydropower_plant1_:capacity"
+    "max_flow": "__hydropower_plant1__:capacity"
     },
     {
     "name": "hydropower_plant2",
     "type": "input",
-    "max_flow": "_hydropower_plant2_:capacity"
+    "max_flow": "__hydropower_plant2__:capacity"
     },
     {
     "name": "energy_demand_city1",
     "type": "output",
-    "max_flow": "_energy_demand_:c1",
+    "max_flow": "__energy_demand__:c1",
     "cost": -10
     },
     {
     "name": "energy_demand_city2",
     "type": "output",
-    "max_flow": "_energy_demand_:c2",
+    "max_flow": "__energy_demand__:c2",
     "cost": -10
     },
     {
@@ -51,7 +51,7 @@
     {
     "name": "transmission_line_s1s2",
     "type": "link",
-    "max_flow": "_transmission_line_:capacity"
+    "max_flow": "__transmission_line__:capacity"
     }
 ],
 
@@ -114,7 +114,7 @@
      "column": "energy_demand1",
      "comment": "units [MWh]"
       },
-    "_energy_demand_:c1": {
+    "__energy_demand__:c1": {
      "type": "aggregated",
      "agg_func": "product",
      "parameters": ["energy_expected_demand_c1",
@@ -128,14 +128,14 @@
      "column": "energy_demand2",
      "comment": "units [MWh]"
       },
-    "_energy_demand_:c2": {
+    "__energy_demand__:c2": {
      "type": "aggregated",
      "agg_func": "product",
      "parameters": ["energy_expected_demand_c2",
                     "E_Demand_Factor"
                    ]
       },
-    "_thermal_plant1_:capacity": {
+    "__thermal_plant1__:capacity": {
      "type": "constant",
      "value": 1000,
      "is_variable": false,
@@ -143,7 +143,7 @@
      "lower_bounds": 0,
      "comment": "units [MW]"
       },
-    "_thermal_plant2_:capacity": {
+    "__thermal_plant2__:capacity": {
      "type": "constant",
      "value": 1000,
      "is_variable": false,
@@ -151,7 +151,7 @@
      "lower_bounds": 0,
      "comment": "units [MW]"
       },
-    "_thermal_plant3_:capacity": {
+    "__thermal_plant3__:capacity": {
      "type": "constant",
      "value": 0.0,
      "is_variable": true,
@@ -159,7 +159,7 @@
      "lower_bounds": 0,
      "comment": "units [MW]"
       },
-    "_hydropower_plant1_:capacity": {
+    "__hydropower_plant1__:capacity": {
      "type": "constant",
      "value": 1500,
      "is_variable": false,
@@ -167,7 +167,7 @@
      "lower_bounds": 0,
      "comment": "units [MW]"
       },
-    "_hydropower_plant2_:capacity": {
+    "__hydropower_plant2__:capacity": {
      "type": "constant",
      "value": 0,
      "is_variable": true,
@@ -175,7 +175,7 @@
      "lower_bounds": 0,
      "comment": "units [MW]"
       },
-    "_transmission_line_:capacity": {
+    "__transmission_line__:capacity": {
      "type": "constant",
      "value": 0.0,
      "is_variable": true,
@@ -187,19 +187,19 @@
 "recorders": {
     "thermal_plant3_capex": {
      "type": "MeanParameterRecorder",
-     "parameter": "_thermal_plant3_:capacity",
+     "parameter": "__thermal_plant3__:capacity",
      "factor": 130199,
      "comment": "units [$/MW]"
       },
     "hydropower_plant2_capex": {
      "type": "MeanParameterRecorder",
-     "parameter": "_hydropower_plant2_:capacity",
+     "parameter": "__hydropower_plant2__:capacity",
      "factor": 90380,
      "comment": "units [$/MW]"
       },
     "transmission_line_capex": {
      "type": "MeanParameterRecorder",
-     "parameter": "_transmission_line_:capacity",
+     "parameter": "__transmission_line__:capacity",
      "factor": 5484,
      "comment": "units [$/MW]"
       },
