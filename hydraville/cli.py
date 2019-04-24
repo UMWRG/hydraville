@@ -35,6 +35,12 @@ MODEL_OPTIONS = {
             'water'
         ]
     },
+    'water-iwr': {
+        'template': 'model_template.json',
+        'networks': [
+            'water_iwr'
+        ]
+    },
     'energy-only': {
         'template': 'model_template.json',
         'networks': [
