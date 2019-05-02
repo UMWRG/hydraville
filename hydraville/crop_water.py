@@ -8,7 +8,7 @@ class IrrigationWaterRequirementParameter(Parameter):
     """Simple irrigation water requirement model. """
     def __init__(self, model, rainfall_parameter, et_parameter, crop_water_factor_parameter, area,
                  reference_et, yield_per_area, revenue_per_yield,
-                 application_efficiency=1.0, conveyance_efficiency=1.0, **kwargs):
+                 application_efficiency=0.8, conveyance_efficiency=0.7, **kwargs):
         super().__init__(model, **kwargs)
 
         self._rainfall_parameter = None
@@ -25,23 +25,24 @@ class IrrigationWaterRequirementParameter(Parameter):
         self.conveyance_efficiency = conveyance_efficiency
 
     rainfall_parameter = parameter_property("_rainfall_parameter")
-    et_parameter = parameter_property("_et_parameter")
+    eto_parameter = parameter_property("_eto_parameter")
     crop_water_factor_parameter = parameter_property("_crop_water_factor_parameter")
 
     def value(self, timestep, scenario_index):
 
-        rainfall = self.rainfall_parameter.get_value(scenario_index)
-        et = self.et_parameter.get_value(scenario_index)
-        effective_rainfall = rainfall - et
-
+        effective_rainfall = self.rainfall_parameter.get_value(scenario_index)
+        et = self.eto_parameter.get_value(scenario_index)
+        crop_water_factor = self.crop_water_factor_parameter.get_value(scenario_index)
+      
         # Calculate crop water requirement
-        if effective_rainfall > self.reference_et:
-            # No crop water requirement if there is net rainfall
+
+        if effective_rainfall > crop_water_factor * et:
+            # No crop water requirement if there is enough rainfall
             crop_water_requirement = 0.0
         else:
             # Irrigation required to meet shortfall in rainfall
-            crop_water_factor = self.crop_water_factor_parameter.get_value(scenario_index)
-            crop_water_requirement = crop_water_factor * (self.reference_et - effective_rainfall) * self.area
+            
+            crop_water_requirement = (crop_water_factor * et - effective_rainfall) * self.area
 
         # Calculate overall efficiency
         efficiency = self.application_efficiency * self.conveyance_efficiency
@@ -64,7 +65,7 @@ class IrrigationWaterRequirementParameter(Parameter):
         return cls(model, rainfall_parameter, et_parameter, cwf_parameter, **data)
 IrrigationWaterRequirementParameter.register()
 
-
+#Mohammed: How does it work when two schemes have diffrent crops? which base-crop does it use to weight the other crops?
 class RelativeCropYieldRecorder(Recorder):
     """Relative crop yield recorder.
 
