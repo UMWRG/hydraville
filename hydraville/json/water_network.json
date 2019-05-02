@@ -513,34 +513,35 @@
       }
 },
 "recorders": {
-    "irr1_deficit_freq": {
+    "__irrigation1__:deficit_freq": {
       "type": "deficitfrequencynodeRecorder",
       "node": "irrigation1"
       },
-    "irr2_deficit_freq": {
+    "__irrigation2__:deficit_freq": {
      "type": "deficitfrequencynodeRecorder",
      "node": "irrigation2"
       },
-    "W_supply_deficit_freq": {
+    "__water_supply1__:deficit_freq": {
      "type": "deficitfrequencynodeRecorder",
      "node": "water_supply1"
       },
     "aggr_W_deficit_freq": {
      "type": "aggregatedrecorder",
      "recorder_agg_func": "max",
-     "recorders": ["irr1_deficit_freq",
-                   "irr2_deficit_freq",
-                   "W_supply_deficit_freq"
-                  ],
+     "recorders": [
+       "__irrigation1__:deficit_freq",
+       "__irrigation2__:deficit_freq",
+       "W_supply_deficit_freq"
+     ],
     "is_objective": "minimise"
     },
-    "reservoir2_capex": {
+    "__reservoir2__:capex": {
      "type": "MeanParameterRecorder",
      "parameter": "__reservoir2__:capacity",
      "factor": 9982,
      "comment": "annualised cost units [$/hm^3]"
       },
-    "canal2_capex": {
+    "__canal2__:capex": {
      "type": "MeanParameterRecorder",
      "parameter": "__canal2__:capacity",
      "factor": 8094058,
@@ -549,25 +550,27 @@
     "W_total_capex": {
      "type": "aggregated",
      "recorder_agg_func": "sum",
-     "recorders": ["reservoir2_capex",
-                   "canal2_capex"
-                  ],
+     "recorders": [
+       "__reservoir2__:capex",
+       "__canal2__:capex"
+     ],
     "is_objective": null
     },
-    "Hydropower1_MWh": {
+    "__hydropower1_energy_generation__:MWh": {
      "type": "TotalFlowNodeRecorder",
      "node": "hydropower1_energy_generation"
       },
-    "Hydropower2_MWh": {
+    "__hydropower2_energy_generation__:MWh": {
      "type": "TotalFlowNodeRecorder",
      "node": "hydropower2_energy_generation"
       },
     "aggr_Hydropower_MWh": {
      "type": "aggregated",
      "recorder_agg_func": "sum",
-     "recorders": ["Hydropower1_MWh",
-                   "Hydropower2_MWh"
-                  ],
+     "recorders": [
+       "__hydropower1_energy_generation__:MWh",
+       "__hydropower2_energy_generation__:MWh"
+     ],
     "is_objective": null
       }
   }
