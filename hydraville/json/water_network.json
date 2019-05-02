@@ -531,7 +531,7 @@
      "recorders": [
        "__irrigation1__:deficit_freq",
        "__irrigation2__:deficit_freq",
-       "W_supply_deficit_freq"
+       "__water_supply1__:deficit_freq"
      ],
     "is_objective": "minimise"
     },
