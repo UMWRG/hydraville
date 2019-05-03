@@ -189,31 +189,19 @@
       } 
 },
 "recorders": {
-<<<<<<< HEAD
     "__thermal_plant2_north__:capacity_capex": {
-=======
-    "__thermal_plant3__:capex": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "MeanParameterRecorder",
      "parameter": "__thermal_plant2_north__:capacity",
      "factor": 130199,
      "comment": "units [$/MW]"
       },
-<<<<<<< HEAD
     "__hydropower_plant_south__:capacity_capex": {
-=======
-    "__hydropower_plant2__:capex": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "MeanParameterRecorder",
      "parameter": "__hydropower_plant_south__:capacity",
      "factor": 90380,
      "comment": "units [$/MW]"
       },
-<<<<<<< HEAD
     "__transmission_line_north_south__:capacity_capex": {
-=======
-    "__transmission_line__:capex": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "MeanParameterRecorder",
      "parameter": "__transmission_line__:capacity",
      "factor": 5484,
@@ -222,43 +210,24 @@
     "energy_infrastructure_total_capex": {
      "type": "aggregated",
      "recorder_agg_func": "sum",
-<<<<<<< HEAD
      "recorders": ["__thermal_plant2_north__:capacity_capex",
                     "__hydropower_plant_south__:capacity_capex",
                     "__transmission_line_north_south__:capacity_capex"],
     "is_objective": null
       },
     "__thermal_plant1_north__:opex": {
-=======
-     "recorders": [
-       "__thermal_plant3__:capex",
-       "__hydropower_plant2__:capex",
-       "__transmission_line__:capex"
-     ],
-    "is_objective": null
-      },
-    "__thermal_plant1__:opex": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "TotalFlowNodeRecorder",
      "node": "thermal_plant1_north",
      "factor": 0.96,
      "comment": "units [$/MWh]"
       },
-<<<<<<< HEAD
     "__thermal_plant2_north__:opex": {
-=======
-    "__thermal_plant2__:opex": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "TotalFlowNodeRecorder",
      "node": "thermal_plant2_north",
      "factor": 2.22,
      "comment": "units [$/MWh]" 
       },
-<<<<<<< HEAD
     "__thermal_plant1_south__:opex": {
-=======
-    "__thermal_plant3__:opex": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "TotalFlowNodeRecorder",
      "node": "thermal_plant1_south",
      "factor": 4.28,
@@ -267,47 +236,25 @@
     "energy_total_opex": {
      "type": "aggregated",
      "recorder_agg_func": "sum",
-<<<<<<< HEAD
      "recorders": ["__thermal_plant1_north__:opex",
                    "__thermal_plant2_north__:opex",
                    "__thermal_plant1_south__:opex"],
     "is_objective": null
       },
     "__energy_demand_north__:deficit_freq": {
-=======
-     "recorders": [
-       "__thermal_plant1__:opex",
-       "__thermal_plant2__:opex",
-       "__thermal_plant3__:opex"
-     ],
-    "is_objective": null
-      },
-    "__energy_demand_city1__:deficit_freq": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "deficitfrequencynodeRecorder",
      "node": "energy_demand_north"
       },
-<<<<<<< HEAD
     "__energy_demand_south__:deficit_freq": {
-=======
-    "__energy_demand_city2__:deficit_freq": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "deficitfrequencynodeRecorder",
      "node": "energy_demand_south"
       },
     "aggr_energy_deficit_freq": {
      "type": "aggregatedrecorder",
      "recorder_agg_func": "max",
-<<<<<<< HEAD
      "recorders": ["__energy_demand_north__:deficit_freq",
                    "__energy_demand_south__:deficit_freq"
                   ],
-=======
-     "recorders": [
-       "__energy_demand_city1__:deficit_freq",
-       "__energy_demand_city2__:deficit_freq"
-     ],
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
     "is_objective": "minimise"
       }
   }

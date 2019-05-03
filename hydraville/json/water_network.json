@@ -527,60 +527,33 @@
       }
 },
 "recorders": {
-<<<<<<< HEAD
     "__irrigation_north__:deficit_freq": {
-=======
-    "__irrigation1__:deficit_freq": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
       "type": "deficitfrequencynodeRecorder",
       "node": "irrigation_north"
       },
-<<<<<<< HEAD
     "__irrigation_south__:deficit_freq": {
-=======
-    "__irrigation2__:deficit_freq": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "deficitfrequencynodeRecorder",
      "node": "irrigation_south"
       },
-<<<<<<< HEAD
     "__water_supply_south__:deficit_freq": {
-=======
-    "__water_supply1__:deficit_freq": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "deficitfrequencynodeRecorder",
      "node": "water_supply_south"
       },
     "aggr_water_deficit_freq": {
      "type": "aggregatedrecorder",
      "recorder_agg_func": "max",
-<<<<<<< HEAD
      "recorders": ["__irrigation_north__:deficit_freq",
                    "__irrigation_south__:deficit_freq",
                    "__water_supply_south__:deficit_freq"],
     "is_objective": "minimise"
     },
     "__reservoir_south__:capex": {
-=======
-     "recorders": [
-       "__irrigation1__:deficit_freq",
-       "__irrigation2__:deficit_freq",
-       "__water_supply1__:deficit_freq"
-     ],
-    "is_objective": "minimise"
-    },
-    "__reservoir2__:capex": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "MeanParameterRecorder",
      "parameter": "__reservoir_south__:capacity",
      "factor": 9982,
      "comment": "annualised cost units [$/hm^3]"
       },
-<<<<<<< HEAD
     "__irrigation_north_allocation2__:new_canal_capex": {
-=======
-    "__canal2__:capex": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "MeanParameterRecorder",
      "parameter": "__new_irrigation_canal_north__:capacity",
      "factor": 8094058,
@@ -589,44 +562,23 @@
     "water_infrastructure_total_capex": {
      "type": "aggregated",
      "recorder_agg_func": "sum",
-<<<<<<< HEAD
      "recorders": ["__reservoir_south__:capex",
                    "__irrigation_north_allocation2__:new_canal_capex"],
     "is_objective": null
     },
     "__hydropower_north_plant_flow__:turbined": {
-=======
-     "recorders": [
-       "__reservoir2__:capex",
-       "__canal2__:capex"
-     ],
-    "is_objective": null
-    },
-    "__hydropower1_energy_generation__:MWh": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "TotalFlowNodeRecorder",
      "node": "hydropower_north_plant_flow"
       },
-<<<<<<< HEAD
     "__hydropower_south_plant_flow__:turbined": {
-=======
-    "__hydropower2_energy_generation__:MWh": {
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
      "type": "TotalFlowNodeRecorder",
      "node": "hydropower_south_plant_flow"
       },
     "aggr_Hydropower_turbined_flow": {
      "type": "aggregated",
      "recorder_agg_func": "sum",
-<<<<<<< HEAD
      "recorders": ["__hydropower_north_plant_flow__:turbined",
                    "__hydropower_south_plant_flow__:turbined"],
-=======
-     "recorders": [
-       "__hydropower1_energy_generation__:MWh",
-       "__hydropower2_energy_generation__:MWh"
-     ],
->>>>>>> c643281ca632f1d1e2e454d2ec9f7b0ed7581896
     "is_objective": null
       }
   }
