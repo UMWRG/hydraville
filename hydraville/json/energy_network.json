@@ -1,55 +1,61 @@
 {
+  "scenarios": [{
+    "name": "E Demands",
+    "size": 3,
+    "ensemble_names": ["First", "Second", "Third"]
+     }
+  ],
 "nodes": [
     {
-    "name": "thermal_plant1",
+    "name": "thermal_plant1_north",
     "type": "input",
     "cost": 0.96,
-    "max_flow": "__thermal_plant1__:capacity"
+    "max_flow": "__thermal_plant1_north__:capacity"
     },
     {
-    "name": "thermal_plant2",
-    "type": "input",
-    "cost": 4.28,
-    "max_flow": "__thermal_plant2__:capacity"
-    },
-    {
-    "name": "thermal_plant3",
+    "name": "thermal_plant2_north",
     "type": "input",
     "cost": 2.22,
-    "max_flow": "__thermal_plant3__:capacity"
+    "max_flow": "__thermal_plant2_north__:capacity"
     },
     {
-    "name": "hydropower_plant1",
+    "name": "thermal_plant1_south",
     "type": "input",
-    "max_flow": "__hydropower_plant1__:capacity"
+    "cost": 4.28,
+    "max_flow": "__thermal_plant1_south__:capacity"
     },
     {
-    "name": "hydropower_plant2",
+    "name": "hydropower_plant_north",
     "type": "input",
-    "max_flow": "__hydropower_plant2__:capacity"
+    "max_flow": "__hydropower_plant_north__:capacity"
     },
     {
-    "name": "energy_demand_city1",
+    "name": "hydropower_plant_south",
+    "type": "input",
+    "max_flow": "__hydropower_plant_south__:capacity"
+    },
+    {
+    "name": "energy_demand_north",
     "type": "output",
-    "max_flow": "__energy_demand__:c1",
+    "max_flow": "__energy_demand__:north",
     "cost": -10
     },
     {
-    "name": "energy_demand_city2",
+    "name": "energy_demand_south",
     "type": "output",
-    "max_flow": "__energy_demand__:c2",
+    "max_flow": "__energy_demand__:south",
     "cost": -10
     },
     {
-    "name": "substation_s1",
+    "name": "substation_north",
     "type": "link"
     },
     {
-    "name": "substation_s2",
+    "name": "substation_south",
     "type": "link"
     },
     {
-    "name": "transmission_line_s1s2",
+    "name": "transmission_line_north_south",
     "type": "link",
     "max_flow": "__transmission_line__:capacity"
     }
@@ -57,48 +63,48 @@
 
 "edges": [
     [
-    "thermal_plant1",
-    "substation_s1"
+    "thermal_plant1_north",
+    "substation_north"
     ],
     [
-    "hydropower_plant1",
-    "substation_s1"
+    "thermal_plant2_north",
+    "substation_north"
     ],
     [
-    "thermal_plant2",
-    "substation_s2"
+    "hydropower_plant_north",
+    "substation_north"
     ],
     [
-    "hydropower_plant2",
-    "substation_s2"
+    "thermal_plant1_south",
+    "substation_south"
     ],
     [
-    "thermal_plant3",
-    "substation_s1"
+    "hydropower_plant_south",
+    "substation_south"
     ],
     [
-    "substation_s1",
-    "transmission_line_s1s2"
+    "substation_north",
+    "transmission_line_north_south"
     ],
     [
-    "transmission_line_s1s2",
-    "substation_s1"
+    "transmission_line_north_south",
+    "substation_south"
     ],
     [
-    "transmission_line_s1s2",
-    "substation_s2"
+    "transmission_line_north_south",
+    "substation_south"
     ],
     [
-    "substation_s2",
-    "transmission_line_s1s2"
+    "substation_south",
+    "transmission_line_north_south"
     ],
     [
-    "substation_s1",
-    "energy_demand_city1"
+    "substation_north",
+    "energy_demand_north"
     ],
     [
-    "substation_s2",
-    "energy_demand_city2"
+    "substation_south",
+    "energy_demand_south"
     ]
 ],
 "parameters": {
@@ -107,35 +113,33 @@
      "scenario": "E Demands",
       "values": [1, 1.02, 1.04]
      },
-    "energy_expected_demand_c1": {
+    "energy_expected_demand_north": {
      "type": "dataframe",
      "url": "../../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
-     "column": "energy_demand1",
+     "column": "energy_demand_north",
      "comment": "units [MWh]"
       },
-    "__energy_demand__:c1": {
+    "__energy_demand__:north": {
      "type": "aggregated",
      "agg_func": "product",
-     "parameters": ["energy_expected_demand_c1",
-                    "E_Demand_Factor"
-                   ]
+     "parameters": ["energy_expected_demand_north",
+                    "E_Demand_Factor"]
       },
-    "energy_expected_demand_c2": {
+    "energy_expected_demand_south": {
      "type": "dataframe",
      "url": "../../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
-     "column": "energy_demand2",
+     "column": "energy_demand_south",
      "comment": "units [MWh]"
       },
-    "__energy_demand__:c2": {
+    "__energy_demand__:south": {
      "type": "aggregated",
      "agg_func": "product",
-     "parameters": ["energy_expected_demand_c2",
-                    "E_Demand_Factor"
-                   ]
+     "parameters": ["energy_expected_demand_south",
+                    "E_Demand_Factor"]
       },
-    "__thermal_plant1__:capacity": {
+    "__thermal_plant1_north__:capacity": {
      "type": "constant",
      "value": 1000,
      "is_variable": false,
@@ -143,15 +147,7 @@
      "lower_bounds": 0,
      "comment": "units [MW]"
       },
-    "__thermal_plant2__:capacity": {
-     "type": "constant",
-     "value": 1000,
-     "is_variable": false,
-     "upper_bounds": 1000,
-     "lower_bounds": 0,
-     "comment": "units [MW]"
-      },
-    "__thermal_plant3__:capacity": {
+    "__thermal_plant2_north__:capacity": {
      "type": "constant",
      "value": 0.0,
      "is_variable": true,
@@ -159,7 +155,15 @@
      "lower_bounds": 0,
      "comment": "units [MW]"
       },
-    "__hydropower_plant1__:capacity": {
+    "__thermal_plant1_south__:capacity": {
+     "type": "constant",
+     "value": 1000,
+     "is_variable": false,
+     "upper_bounds": 1000,
+     "lower_bounds": 0,
+     "comment": "units [MW]"
+      },
+    "__hydropower_plant_north__:capacity": {
      "type": "constant",
      "value": 1500,
      "is_variable": false,
@@ -167,7 +171,7 @@
      "lower_bounds": 0,
      "comment": "units [MW]"
       },
-    "__hydropower_plant2__:capacity": {
+    "__hydropower_plant_south__:capacity": {
      "type": "constant",
      "value": 0,
      "is_variable": true,
@@ -185,73 +189,71 @@
       } 
 },
 "recorders": {
-    "thermal_plant3_capex": {
+    "__thermal_plant2_north__:capacity_capex": {
      "type": "MeanParameterRecorder",
-     "parameter": "__thermal_plant3__:capacity",
+     "parameter": "__thermal_plant2_north__:capacity",
      "factor": 130199,
      "comment": "units [$/MW]"
       },
-    "hydropower_plant2_capex": {
+    "__hydropower_plant_south__:capacity_capex": {
      "type": "MeanParameterRecorder",
-     "parameter": "__hydropower_plant2__:capacity",
+     "parameter": "__hydropower_plant_south__:capacity",
      "factor": 90380,
      "comment": "units [$/MW]"
       },
-    "transmission_line_capex": {
+    "__transmission_line_north_south__:capacity_capex": {
      "type": "MeanParameterRecorder",
      "parameter": "__transmission_line__:capacity",
      "factor": 5484,
      "comment": "units [$/MW]"
       },
-    "E_total_capex": {
+    "energy_infrastructure_total_capex": {
      "type": "aggregated",
      "recorder_agg_func": "sum",
-     "recorders": ["thermal_plant3_capex",
-                    "hydropower_plant2_capex",
-                    "transmission_line_capex"
-                  ],
+     "recorders": ["__thermal_plant2_north__:capacity_capex",
+                    "__hydropower_plant_south__:capacity_capex",
+                    "__transmission_line_north_south__:capacity_capex"],
     "is_objective": null
       },
-    "thermal_plant1_opex": {
+    "__thermal_plant1_north__:opex": {
      "type": "TotalFlowNodeRecorder",
-     "node": "thermal_plant1",
+     "node": "thermal_plant1_north",
      "factor": 0.96,
      "comment": "units [$/MWh]"
       },
-    "thermal_plant2_opex": {
+    "__thermal_plant2_north__:opex": {
      "type": "TotalFlowNodeRecorder",
-     "node": "thermal_plant2",
-     "factor": 4.28,
+     "node": "thermal_plant2_north",
+     "factor": 2.22,
      "comment": "units [$/MWh]" 
       },
-    "thermal_plant3_opex": {
+    "__thermal_plant1_south__:opex": {
      "type": "TotalFlowNodeRecorder",
-     "node": "thermal_plant3",
-     "factor": 2.22,
+     "node": "thermal_plant1_south",
+     "factor": 4.28,
      "comment": "units [$/MWh]"
       },
-    "E_total_opex": {
+    "energy_total_opex": {
      "type": "aggregated",
      "recorder_agg_func": "sum",
-     "recorders": ["thermal_plant1_opex",
-                   "thermal_plant2_opex",
-                   "thermal_plant3_opex"
-                  ],
+     "recorders": ["__thermal_plant1_north__:opex",
+                   "__thermal_plant2_north__:opex",
+                   "__thermal_plant1_south__:opex"],
     "is_objective": null
       },
-    "E_city1_deficit_freq": {
+    "__energy_demand_north__:deficit_freq": {
      "type": "deficitfrequencynodeRecorder",
-     "node": "energy_demand_city1"
+     "node": "energy_demand_north"
       },
-    "E_city2_deficit_freq": {
+    "__energy_demand_south__:deficit_freq": {
      "type": "deficitfrequencynodeRecorder",
-     "node": "energy_demand_city2"
+     "node": "energy_demand_south"
       },
-    "aggr_E_deficit_freq": {
+    "aggr_energy_deficit_freq": {
      "type": "aggregatedrecorder",
      "recorder_agg_func": "max",
-     "recorders": ["E_city1_deficit_freq",
-                   "E_city2_deficit_freq"
+     "recorders": ["__energy_demand_north__:deficit_freq",
+                   "__energy_demand_south__:deficit_freq"
                   ],
     "is_objective": "minimise"
       }
