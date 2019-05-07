@@ -109,7 +109,7 @@
      },
     "energy_expected_demand_c1": {
      "type": "dataframe",
-     "url": "../../data/we-demand_data_v2.0.xls",
+     "url": "../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
      "column": "energy_demand1",
      "comment": "units [MWh]"
@@ -123,7 +123,7 @@
       },
     "energy_expected_demand_c2": {
      "type": "dataframe",
-     "url": "../../data/we-demand_data_v2.0.xls",
+     "url": "../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
      "column": "energy_demand2",
      "comment": "units [MWh]"

@@ -11,11 +11,7 @@
     },
     "scenarios": [{
             "name": "weather",
-            "size": 180,
-            "slice": [
-                0,
-                20
-            ],
+            "size": 181,
             "comment": "scenario_comninations: [0] or slice: [0,1]"
         },
         {

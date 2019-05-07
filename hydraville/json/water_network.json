@@ -276,35 +276,35 @@
 "parameters": {
     "__catchment1__:inflow": {
       "type": "dataframe",
-      "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
+      "url": "../data/catchmod_flows_by_catchment_sub200.h5",
       "scenario": "weather",
       "key": "catchment1_cntr",
       "comment": "units [hm^3/day]"
       },
     "__catchment2__:inflow": {
       "type": "dataframe",
-      "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
+      "url": "../data/catchmod_flows_by_catchment_sub200.h5",
       "scenario": "weather",
       "key": "catchment2_cntr",
       "comment": "units [hm^3/day]"
       },
    "__catchment3__:inflow": {
      "type": "dataframe",
-     "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
+     "url": "../data/catchmod_flows_by_catchment_sub200.h5",
      "scenario": "weather",
      "key": "catchment3_cntr",
      "comment": "units [hm^3/day]"
       },
     "__catchment4__:inflow": {
      "type": "dataframe",
-     "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
+     "url": "../data/catchmod_flows_by_catchment_sub200.h5",
      "scenario": "weather",
      "key": "catchment4_cntr",
      "comment": "units [hm^3/day]"
       },
     "__catchment5__:inflow": {
      "type": "dataframe",
-     "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
+     "url": "../data/catchmod_flows_by_catchment_sub200.h5",
      "scenario": "weather",
      "key": "catchment5_cntr",
      "comment": "units [hm^3/day]"
@@ -316,7 +316,7 @@
       },
     "irr1_expected_demand": {
      "type": "dataframe",
-     "url": "../../data/we-demand_data_v2.0.xls",
+     "url": "../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
      "column": "Dirrigation1_demand",
      "comment": "units [hm^3/day]"
@@ -330,7 +330,7 @@
       },
     "irr2_expected_demand": {
      "type": "dataframe",
-     "url": "../../data/we-demand_data_v2.0.xls",
+     "url": "../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
      "column": "Dirrigation2_demand",
      "comment": "units [hm^3/day]"
@@ -344,7 +344,7 @@
       },
     "water_supp_expected_demand": {
      "type": "dataframe",
-     "url": "../../data/we-demand_data_v2.0.xls",
+     "url": "../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
      "column": "Dwater-supply1_demand",
      "comment": "units [hm^3/day]"

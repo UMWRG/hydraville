@@ -130,6 +130,7 @@ def embed_dataframes(data, path=None):
         params_data[param_name] = json.loads(df.to_frame().to_json())
         params_to_remove.append(param_name)
 
+    params_embedded_on_nodes = []
     for node in data['nodes']:
         for attr_name, attr_data in node.items():
             if attr_name in ('name', 'type'):
@@ -141,11 +142,18 @@ def embed_dataframes(data, path=None):
                     'type': 'dataframe',
                     'data': params_data[attr_data],
                     'pandas_kwargs': {'parse_dates': True}
-
                 }
+                params_embedded_on_nodes.append(attr_data)
 
     # Now remove the separate parameters
     for param_name in params_to_remove:
-        data['parameters'].pop(param_name)
+        if param_name in params_embedded_on_nodes:
+            data['parameters'].pop(param_name)
+        else:
+            data['parameters'][param_name] = {
+                'type': 'dataframe',
+                'data': params_data[param_name],
+                'pandas_kwargs': {'parse_dates': True}
+            }
 
     return data
