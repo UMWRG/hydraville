@@ -12,17 +12,8 @@
     "scenarios": [{
             "name": "weather",
             "size": 181,
+            "slice": [0,20],
             "comment": "scenario_comninations: [0] or slice: [0,1]"
-        },
-        {
-            "name": "W Demands",
-            "size": 3,
-            "ensemble_names": ["First", "Second", "Third"]
-        },
-        {
-            "name": "E Demands",
-            "size": 3,
-            "ensemble_names": ["First", "Second", "Third"]
         }
     ],
     "nodes": [],

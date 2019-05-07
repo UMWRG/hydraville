@@ -34,7 +34,7 @@ MODEL_OPTIONS = {
             'water'
         ]
     },
-    'energy-only': {
+    'energy-simple': {
         'template': 'model_template.json',
         'networks': [
             'energy'
@@ -173,7 +173,7 @@ def postprocess(filename):
 
     df = pandas.concat(data, axis=1)
     
-    FLOW_UNITS   = 'm^3'
+    FLOW_UNITS   = 'Hm^3'
     ENERGY_UNITS = 'MWh'
     PERCENTILES  = np.linspace(0,100)
 
@@ -183,16 +183,16 @@ def postprocess(filename):
         'catchment3'   : f'Catchment 3 inflow [${FLOW_UNITS}/day$]',
         'catchment4'   : f'Catchment 4 inflow [${FLOW_UNITS}/day$]',
         'catchment5'   : f'Catchment 5 inflow [${FLOW_UNITS}/day$]',
-        'irrigation1'  : f'Irrigation Sector 1 [${FLOW_UNITS}/day$]',
-        'irrigation2'  : f'Irrigation Sector 2 [${FLOW_UNITS}/day$]',
-        'water_supply1': f'Water Supply [${FLOW_UNITS}/day$]',
-        'reservoir1'   : f'Reservoir 1 Storage [${FLOW_UNITS}$]',
-        'reservoir2'   : f'Reservoir 2 Storage [${FLOW_UNITS}$]',
-        'turbine_energy_generation1': f'Hydropower 1 [${ENERGY_UNITS}$]',
-        'turbine_energy_generation2': f'Hydropower 2 [${ENERGY_UNITS}$]',
-        'thermal1'     : f'Thermal plant 1 [${ENERGY_UNITS}$]',
-        'thermal2'     : f'Thermal plant 2 [${ENERGY_UNITS}$]',
-        'thermal3'     : f'Thermal plant 3 [${ENERGY_UNITS}$]',
+#        'irrigation1'  : f'Irrigation Sector 1 [${FLOW_UNITS}/day$]',
+#        'irrigation2'  : f'Irrigation Sector 2 [${FLOW_UNITS}/day$]',
+#        'water_supply1': f'Water Supply [${FLOW_UNITS}/day$]',
+#        'reservoir1'   : f'Reservoir 1 Storage [${FLOW_UNITS}$]',
+#        'reservoir2'   : f'Reservoir 2 Storage [${FLOW_UNITS}$]',
+#        'turbine_energy_generation1': f'Hydropower 1 [${ENERGY_UNITS}$]',
+#        'turbine_energy_generation2': f'Hydropower 2 [${ENERGY_UNITS}$]',
+#        'thermal1'     : f'Thermal plant 1 [${ENERGY_UNITS}$]',
+#        'thermal2'     : f'Thermal plant 2 [${ENERGY_UNITS}$]',
+#        'thermal3'     : f'Thermal plant 3 [${ENERGY_UNITS}$]',
     }
 
 # TODO check this and make automatic with the labels
