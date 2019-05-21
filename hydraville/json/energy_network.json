@@ -37,13 +37,13 @@
     {
     "name": "energy_demand_north",
     "type": "output",
-    "max_flow": "__energy_demand__:north",
+    "max_flow": "__energy_demand_north__:demand",
     "cost": -10
     },
     {
     "name": "energy_demand_south",
     "type": "output",
-    "max_flow": "__energy_demand__:south",
+    "max_flow": "__energy_demand_south__:demand",
     "cost": -10
     },
     {
@@ -55,7 +55,7 @@
     "type": "link"
     },
     {
-    "name": "transmission_line_north_south",
+    "name": "transmission_line",
     "type": "link",
     "max_flow": "__transmission_line__:capacity"
     }
@@ -84,19 +84,19 @@
     ],
     [
     "substation_north",
-    "transmission_line_north_south"
+    "transmission_line"
     ],
     [
-    "transmission_line_north_south",
+    "transmission_line",
     "substation_south"
     ],
     [
-    "transmission_line_north_south",
-    "substation_south"
+    "transmission_line",
+    "substation_north"
     ],
     [
     "substation_south",
-    "transmission_line_north_south"
+    "transmission_line"
     ],
     [
     "substation_north",
@@ -113,32 +113,36 @@
      "scenario": "E Demands",
       "values": [1, 1.02, 1.04]
      },
-    "energy_expected_demand_north": {
+    "__energy_demand_north__:expected_demand": {
      "type": "dataframe",
      "url": "../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
      "column": "energy_demand_north",
      "comment": "units [MWh]"
       },
-    "__energy_demand__:north": {
+    "__energy_demand_north__:demand": {
      "type": "aggregated",
      "agg_func": "product",
-     "parameters": ["energy_expected_demand_north",
-                    "E_Demand_Factor"]
-      },
-    "energy_expected_demand_south": {
+     "parameters": [
+       "__energy_demand_north__:expected_demand",
+       "E_Demand_Factor"
+     ]
+    },
+    "__energy_demand_south__:expected_demand": {
      "type": "dataframe",
      "url": "../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
      "column": "energy_demand_south",
      "comment": "units [MWh]"
       },
-    "__energy_demand__:south": {
+    "__energy_demand_south__:demand": {
      "type": "aggregated",
      "agg_func": "product",
-     "parameters": ["energy_expected_demand_south",
-                    "E_Demand_Factor"]
-      },
+     "parameters": [
+       "__energy_demand_south__:expected_demand",
+       "E_Demand_Factor"
+     ]
+    },
     "__thermal_plant1_north__:capacity": {
      "type": "constant",
      "value": 1000,
@@ -201,7 +205,7 @@
      "factor": 90380,
      "comment": "units [$/MW]"
       },
-    "__transmission_line_north_south__:capacity_capex": {
+    "__transmission_line__:capacity_capex": {
      "type": "MeanParameterRecorder",
      "parameter": "__transmission_line__:capacity",
      "factor": 5484,
@@ -212,7 +216,7 @@
      "recorder_agg_func": "sum",
      "recorders": ["__thermal_plant2_north__:capacity_capex",
                     "__hydropower_plant_south__:capacity_capex",
-                    "__transmission_line_north_south__:capacity_capex"],
+                    "__transmission_line__:capacity_capex"],
     "is_objective": null
       },
     "__thermal_plant1_north__:opex": {

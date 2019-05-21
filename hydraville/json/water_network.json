@@ -92,37 +92,37 @@
     {
     "name": "hydropower_north_plant_flow",
     "type": "river",
-    "max_flow": "__hydropower_north_plant__:control",
+    "max_flow": "__hydropower_north_plant_flow__:control",
     "comment": "units [hm^3/day]"
     },
     {
     "name": "hydropower_south_plant_flow",
     "type": "river",
-    "max_flow": "__hydropower_south_plant__:control",
+    "max_flow": "__hydropower_south_plant_flow__:control",
     "comment": "units [hm^3/day]"
     },
     {
     "name": "irrigation_north_allocation1",
     "type": "link",
-    "max_flow": "__existing_irrigation_canal_north__:capacity",
+    "max_flow": "__irrigation_north_allocation1__:capacity",
     "comment": "units [hm^3/day]"
     },
     {
     "name": "irrigation_north_allocation2",
     "type": "link",
-    "max_flow": "__irrigation_north__:control",
+    "max_flow": "__irrigation_north_allocation2__:control",
     "comment": "units [hm^3/day]"
     },
     {
     "name": "irrigation_south_allocation",
     "type": "link",
-    "max_flow": "__irrigation_south__:control",
+    "max_flow": "__irrigation_south_allocation__:control",
     "comment": "units [hm^3/day]"
     },
     {
     "name": "water_supply_south_allocation",
     "type": "link",
-    "max_flow": "__water_supply_south__:control",
+    "max_flow": "__water_supply_south_allocation__:control",
     "comment": "units [hm^3/day]"
     },
     {
@@ -336,7 +336,7 @@
      "scenario": "W Demands",
      "values": [1, 1.02, 1.04]
       },
-    "irrigation_north_expected_demand": {
+    "__irrigation_north__:expected_demand": {
      "type": "dataframe",
      "url": "../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
@@ -346,10 +346,12 @@
     "__irrigation_north__:demand": {
      "type": "aggregated",
      "agg_func": "product",
-     "parameters": ["irrigation_north_expected_demand",
-                    "W_Demand_Factor"]
-      },
-    "irrigation_south_expected_demand": {
+     "parameters": [
+       "__irrigation_north__:expected_demand",
+       "W_Demand_Factor"
+     ]
+    },
+    "__irrigation_south__:expected_demand": {
      "type": "dataframe",
      "url": "../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
@@ -359,10 +361,12 @@
     "__irrigation_south__:demand": {
      "type": "aggregated",
      "agg_func": "product",
-     "parameters": ["irrigation_south_expected_demand",
-                    "W_Demand_Factor"]
-      },
-    "water_supply_south_expected_demand": {
+     "parameters": [
+       "__irrigation_south__:expected_demand",
+       "W_Demand_Factor"
+     ]
+    },
+    "__water_supply_south__:expected_demand": {
      "type": "dataframe",
      "url": "../data/we-demand_data_v2.0.xls",
      "index_col": "timestamp",
@@ -372,9 +376,11 @@
     "__water_supply_south__:demand": {
      "type": "aggregated",
      "agg_func": "product",
-     "parameters": ["water_supply_south_expected_demand",
-                    "W_Demand_Factor"]
-      },
+     "parameters": [
+       "__water_supply_south__:expected_demand",
+       "W_Demand_Factor"
+     ]
+    },
     "__reservoir_north__:capacity": {
      "type": "constant",
      "value": 1500,
@@ -391,21 +397,22 @@
      "lower_bounds": 0,
      "comment": "units [hm^3]"
       },
-    "__irrigation_north__:control": {
+    "__irrigation_north_allocation2__:control": {
      "type": "controlcurve",
      "storage_node": "reservoir_north",
-     "control_curve": "irrigation_north_cc",
-     "parameters": ["__new_irrigation_canal_north__:capacity",
-                    "canal_zero"]
+     "control_curve": "__irrigation_north_allocation2__:cc",
+     "parameters": [
+       "__irrigation_north_allocation2__:capacity",
+       "canal_zero"]
       },
-    "irrigation_north_cc": {
+    "__irrigation_north_allocation2__:cc": {
      "type": "constant",
      "value": 0.5,
      "upper_bounds": 1.0,
      "lower_bounds": 0.0,
      "is_variable": true
       },
-    "__existing_irrigation_canal_north__:capacity": {
+    "__irrigation_north_allocation1__:capacity": {
      "type": "constant",
      "value": 1.5,
      "is_variable": false,
@@ -413,7 +420,7 @@
      "lower_bounds": 0,
      "comment": "units [hm^3/day]"
       },
-    "__new_irrigation_canal_north__:capacity": {
+    "__irrigation_north_allocation2__:capacity": {
      "type": "constant",
      "value": 0.0,
      "is_variable": true,
@@ -421,21 +428,23 @@
      "lower_bounds": 0,
      "comment": "units [hm^3/day]"
       },
-    "__irrigation_south__:control": {
+    "__irrigation_south_allocation__:control": {
      "type": "controlcurve",
      "storage_node": "reservoir_south",
-     "control_curve": "irrigation_south_cc",
-     "parameters": ["__existing_irrigation_canal_south__:capacity",
-                    "canal_zero"]
-      },
-    "irrigation_south_cc": {
+     "control_curve": "__irrigation_south_allocation__:cc",
+     "parameters": [
+       "__irrigation_south_allocation__:capacity",
+       "canal_zero"
+     ]
+    },
+    "__irrigation_south_allocation__:cc": {
      "type": "constant",
      "value": 0.5,
      "upper_bounds": 1.0,
      "lower_bounds": 0.0,
      "is_variable": true
       },
-    "__existing_irrigation_canal_south__:capacity": {
+    "__irrigation_south_allocation__:capacity": {
      "type": "constant",
      "value": 9.0,
      "is_variable": false,
@@ -443,21 +452,23 @@
      "lower_bounds": 0,
      "comment": "units [hm^3/day]"
       },
-    "__water_supply_south__:control": {
+    "__water_supply_south_allocation__:control": {
      "type": "controlcurve",
      "storage_node": "reservoir_south",
-     "control_curve": "water_supply_south_cc",
-     "parameters": ["__existing_water_supply_canal_south__:capacity",
-                    "canal_zero"]
-      },
-    "water_supply_south_cc": {
+     "control_curve": "__water_supply_south_allocation__:cc",
+     "parameters": [
+       "__water_supply_south_allocation__:capacity",
+       "canal_zero"
+     ]
+    },
+    "__water_supply_south_allocation__:cc": {
      "type": "constant",
      "value": 0.5,
      "upper_bounds": 1.0,
      "lower_bounds": 0.0,
      "is_variable": true
       },
-    "__existing_water_supply_canal_south__:capacity": {
+    "__water_supply_south_allocation__:capacity": {
      "type": "constant",
      "value": 9.0,
      "is_variable": false,
@@ -473,21 +484,23 @@
      "lower_bounds": 0.0,
      "comment": "units [hm^3/day]"
       },
-    "__hydropower_north_plant__:control": {
+    "__hydropower_north_plant_flow__:control": {
      "type": "controlcurve",
      "storage_node": "reservoir_north",
-     "control_curve": "hydropower_north_plant_cc1",
-     "parameters": ["hydropower_north_plant_above",
-                    "hydropower_north_plant_below"]
-      },
-    "hydropower_north_plant_cc1": {
+     "control_curve": "__hydropower_north_plant_flow__:cc1",
+     "parameters": [
+       "__hydropower_north_plant_flow__:release_above",
+       "__hydropower_north_plant_flow__:release_below"
+     ]
+    },
+    "__hydropower_north_plant_flow__:cc1": {
      "type": "constant",
      "value": 0.5,
      "upper_bounds": 1.0,
      "lower_bounds": 0.0,
      "is_variable": true
-      },
-    "hydropower_north_plant_above": {
+    },
+    "__hydropower_north_plant_flow__:release_above": {
      "type": "constant",
      "value": 30,
      "upper_bounds": 30,
@@ -495,25 +508,27 @@
      "is_variable": true,
      "comment": "units [hm^3/day]"
       },
-    "hydropower_north_plant_below": {
+    "__hydropower_north_plant_flow__:release_below": {
      "type": "constant",
      "value": 0.0
       },
-    "__hydropower_south_plant__:control": {
+    "__hydropower_south_plant_flow__:control": {
      "type": "controlcurve",
      "storage_node": "reservoir_south",
-     "control_curve": "hydropower_south_plant_cc1",
-     "parameters": ["hydropower_south_plant_above",
-                    "hydropower_south_plant_below"]
-      },
-    "hydropower_south_plant_cc1": {
+     "control_curve": "__hydropower_south_plant_flow__:cc1",
+     "parameters": [
+       "__hydropower_south_plant_flow__:release_above",
+       "__hydropower_south_plant_flow__:release_below"
+     ]
+    },
+    "__hydropower_south_plant_flow__:cc1": {
      "type": "constant",
      "value": 0.5,
      "upper_bounds": 1.0,
      "lower_bounds": 0.0,
      "is_variable": true
       },
-    "hydropower_south_plant_above": {
+    "__hydropower_south_plant_flow__:release_above": {
      "type": "constant",
      "value": 30,
      "upper_bounds": 30,
@@ -521,7 +536,7 @@
      "is_variable": true,
      "comment": "units [hm^3/day]"
       },
-    "hydropower_south_plant_below": {
+    "__hydropower_south_plant_flow__:release_below": {
      "type": "constant",
      "value": 0.0
       }
@@ -555,7 +570,7 @@
       },
     "__irrigation_north_allocation2__:new_canal_capex": {
      "type": "MeanParameterRecorder",
-     "parameter": "__new_irrigation_canal_north__:capacity",
+     "parameter": "__irrigation_north_allocation2__:capacity",
      "factor": 8094058,
      "comment": "annualised cost units [$/hm^3/day]"
       },
