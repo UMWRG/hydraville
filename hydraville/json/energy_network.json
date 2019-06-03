@@ -1,262 +1,265 @@
 {
-    "nodes": [{
-        "name": "coal_power_plant",
-        "type": "input",
-        "cost": 700,
-        "max_flow": "coal_power_plant_capacity"
-      },
-      {
-        "name": "oil_power_plant",
-        "type": "input",
-        "cost": 800,
-        "max_flow": "oil_power_plant_capacity"
-      },
-      {
-        "name": "LNG_power_plant",
-        "type": "input",
-        "cost": 900,
-        "max_flow": "LNG_power_plant_capacity"
-      },
-      {
-        "name": "hydropower_plant1",
-        "type": "input",
-        "max_flow": "hydropower_plant1_capacity"
-      },
-      {
-        "name": "hydropower_plant2",
-        "type": "input",
-        "max_flow": "hydropower_plant2_capacity"
-      },
-      {
-        "name": "energy_demand_city1",
-        "type": "output",
-        "max_flow": "energy_demand_c1",
-        "cost": -10000
-      },
-      {
-        "name": "energy_demand_city2",
-        "type": "output",
-        "max_flow": "energy_demand_c2",
-        "cost": -10000
-      },
-      {
-        "name": "substation_s1",
-        "type": "link"
-      },
-      {
-        "name": "substation_s2",
-        "type": "link"
-      },
-      {
-        "name": "transmission_line_s1s2",
-        "type": "link",
-        "max_flow": "transmission_line_capacity"
-      }
-    ],
-    "edges": [
-        [
-            "coal_power_plant",
-            "substation_s1"
-          ],
-          [
-            "hydropower_plant1",
-            "substation_s1"
-          ],
-          [
-            "LNG_power_plant",
-            "substation_s1"
-          ],
-          [
-            "hydropower_plant2",
-            "substation_s1"
-          ],
-          [
-            "oil_power_plant",
-            "substation_s2"
-          ],
-          [
-            "substation_s1",
-            "transmission_line_s1s2"
-          ],
-          [
-            "transmission_line_s1s2",
-            "substation_s1"
-          ],
-          [
-            "transmission_line_s1s2",
-            "substation_s2"
-          ],
-          [
-            "substation_s2",
-            "transmission_line_s1s2"
-          ],
-          [
-            "substation_s1",
-            "energy_demand_city1"
-          ],
-          [
-            "substation_s2",
-            "energy_demand_city2"
-          ]
-    ],
-    "parameters": { 
-        "energy_demand_c1": {
-          "type": "dataframe",
-          "url": "../data/we-demand_data.xls",
-          "index_col": "timestamp",
-          "column": "energy_demand1",
-          "comment": "units [MWh]"
-        },
-        "energy_demand_c2": {
-          "type": "dataframe",
-          "url": "../data/we-demand_data.xls",
-          "index_col": "timestamp",
-          "column": "energy_demand2",
-          "comment": "units [MWh]"
-        },
-          "coal_power_plant_capacity": {
-          "type": "constant",
-          "value": 700,
-          "is_variable": true,
-          "upper_bounds": 1500,
-          "lower_bounds": 0,
-          "comment": "units [MW]"
-        },
-          "oil_power_plant_capacity": {
-          "type": "constant",
-          "value": 800,
-          "is_variable": true,
-          "upper_bounds": 1500,
-          "lower_bounds": 0,
-          "comment": "units [MW]"
-        },
-          "LNG_power_plant_capacity": {
-          "type": "constant",
-          "value": 900,
-          "is_variable": true,
-          "upper_bounds": 1500,
-          "lower_bounds": 0,
-          "comment": "units [MW]"
-        },
-          "hydropower_plant1_capacity": {
-          "type": "constant",
-          "value": 700,
-          "is_variable": true,
-          "upper_bounds": 1090,
-          "lower_bounds": 0,
-          "comment": "units [MW]"
-        },
-          "hydropower_plant2_capacity": {
-          "type": "constant",
-          "value": 600,
-          "is_variable": true,
-          "upper_bounds": 1090,
-          "lower_bounds": 0,
-          "comment": "units [MW]"
-        },
-          "transmission_line_capacity": {
-          "type": "constant",
-          "value": 800,
-          "is_variable": true,
-          "upper_bounds": 1500,
-          "lower_bounds": 0,
-          "comment": "units [MW]"
-        }
-      },
-      "recorders": {
-          "coal_power_plant_capex": {
-          "type": "MeanParameterRecorder",
-          "parameter": "coal_power_plant_capacity",
-          "factor": 334514,
-          "comment": "units [$/MW]"
-        },
-        "oil_power_plant_capex": {
-          "type": "MeanParameterRecorder",
-          "parameter": "oil_power_plant_capacity",
-          "factor": 62650,
-          "comment": "units [$/MW]"
-        },
-        "LNG_power_plant_capex": {
-          "type": "MeanParameterRecorder",
-          "parameter": "LNG_power_plant_capacity",
-          "factor": 130199,
-          "comment": "units [$/MW]"
-        },
-        "hydropower_plant1_capex": {
-          "type": "MeanParameterRecorder",
-          "parameter": "hydropower_plant1_capacity",
-          "factor": 112779,
-          "comment": "units [$/MW]"
-        },
-        "hydropower_plant2_capex": {
-          "type": "MeanParameterRecorder",
-          "parameter": "hydropower_plant2_capacity",
-          "factor": 90380,
-          "comment": "units [$/MW]"
-        },
-        "transmission_line_capex": {
-          "type": "MeanParameterRecorder",
-          "parameter": "transmission_line_capacity",
-          "factor": 5484,
-          "comment": "units [$/MW]"
-        },
-        "energy_model_total_capex": {
-          "type": "aggregated",
-          "recorder_agg_func": "sum",
-          "recorders": [
-            "coal_power_plant_capex",
-            "oil_power_plant_capex",
-            "LNG_power_plant_capex",
-            "hydropower_plant1_capex",
-            "hydropower_plant2_capex",
-            "transmission_line_capex"
-          ],
-          "is_objective": "minimise"
-        },
-        "coal_power_plant_opex": {
-          "type": "TotalFlowNodeRecorder",
-          "node": "coal_power_plant",
-          "factor": 48,
-          "comment": "units [$/MWh]"
-        },
-        "oil_power_plant_opex": {
-          "type": "TotalFlowNodeRecorder",
-          "node": "oil_power_plant",
-          "factor": 214,
-          "comment": "units [$/MWh]"
-        },
-        "LNG_power_plant_opex": {
-          "type": "TotalFlowNodeRecorder",
-          "node": "LNG_power_plant",
-          "factor": 111,
-          "comment": "units [$/MWh]"
-        },
-        "energy_model_total_opex": {
-          "type": "aggregated",
-          "recorder_agg_func": "sum",
-          "recorders": [
-            "coal_power_plant_opex",
-            "oil_power_plant_opex",
-            "LNG_power_plant_opex"
-          ],
-          "is_objective": "minimise"
-        },
-        "energy_demand_city1_deficit_frequency": {
-          "type": "deficitfrequencynodeRecorder",
-          "node": "energy_demand_city1"
-        },
-        "energy_demand_city2_deficit_frequency": {
-          "type": "deficitfrequencynodeRecorder",
-          "node": "energy_demand_city2"
-        },
-        "aggregated_energy_deficit_frequency": {
-          "type": "aggregatedrecorder",
-          "recorder_agg_func": "mean",
-          "recorders": [
-            "energy_demand_city1_deficit_frequency",
-            "energy_demand_city2_deficit_frequency"
-          ],
-          "is_objective": "minimise"
-        }
+  "scenarios": [{
+    "name": "E Demands",
+    "size": 3,
+    "ensemble_names": ["First", "Second", "Third"]
+     }
+  ],
+"nodes": [
+    {
+    "name": "thermal_plant1_north",
+    "type": "input",
+    "cost": 0.96,
+    "max_flow": "__thermal_plant1_north__:capacity"
+    },
+    {
+    "name": "thermal_plant2_north",
+    "type": "input",
+    "cost": 2.22,
+    "max_flow": "__thermal_plant2_north__:capacity"
+    },
+    {
+    "name": "thermal_plant1_south",
+    "type": "input",
+    "cost": 4.28,
+    "max_flow": "__thermal_plant1_south__:capacity"
+    },
+    {
+    "name": "hydropower_plant_north",
+    "type": "input",
+    "max_flow": "__hydropower_plant_north__:capacity"
+    },
+    {
+    "name": "hydropower_plant_south",
+    "type": "input",
+    "max_flow": "__hydropower_plant_south__:capacity"
+    },
+    {
+    "name": "energy_demand_north",
+    "type": "output",
+    "max_flow": "__energy_demand_north__:demand",
+    "cost": -10
+    },
+    {
+    "name": "energy_demand_south",
+    "type": "output",
+    "max_flow": "__energy_demand_south__:demand",
+    "cost": -10
+    },
+    {
+    "name": "substation_north",
+    "type": "link"
+    },
+    {
+    "name": "substation_south",
+    "type": "link"
+    },
+    {
+    "name": "transmission_line",
+    "type": "link",
+    "max_flow": "__transmission_line__:capacity"
     }
+],
+
+"edges": [
+    [
+    "thermal_plant1_north",
+    "substation_north"
+    ],
+    [
+    "thermal_plant2_north",
+    "substation_north"
+    ],
+    [
+    "hydropower_plant_north",
+    "substation_north"
+    ],
+    [
+    "thermal_plant1_south",
+    "substation_south"
+    ],
+    [
+    "hydropower_plant_south",
+    "substation_south"
+    ],
+    [
+    "substation_north",
+    "transmission_line"
+    ],
+    [
+    "transmission_line",
+    "substation_south"
+    ],
+    [
+    "transmission_line",
+    "substation_north"
+    ],
+    [
+    "substation_south",
+    "transmission_line"
+    ],
+    [
+    "substation_north",
+    "energy_demand_north"
+    ],
+    [
+    "substation_south",
+    "energy_demand_south"
+    ]
+],
+"parameters": {
+    "E_Demand_Factor": {
+     "type": "constantscenario",
+     "scenario": "E Demands",
+      "values": [1, 1.02, 1.04]
+     },
+    "__energy_demand_north__:expected_demand": {
+     "type": "dataframe",
+     "url": "../data/we-demand_data_v2.0.xls",
+     "index_col": "timestamp",
+     "column": "energy_demand_north",
+     "comment": "units [MWh]"
+      },
+    "__energy_demand_north__:demand": {
+     "type": "aggregated",
+     "agg_func": "product",
+     "parameters": [
+       "__energy_demand_north__:expected_demand",
+       "E_Demand_Factor"
+     ]
+    },
+    "__energy_demand_south__:expected_demand": {
+     "type": "dataframe",
+     "url": "../data/we-demand_data_v2.0.xls",
+     "index_col": "timestamp",
+     "column": "energy_demand_south",
+     "comment": "units [MWh]"
+      },
+    "__energy_demand_south__:demand": {
+     "type": "aggregated",
+     "agg_func": "product",
+     "parameters": [
+       "__energy_demand_south__:expected_demand",
+       "E_Demand_Factor"
+     ]
+    },
+    "__thermal_plant1_north__:capacity": {
+     "type": "constant",
+     "value": 1000,
+     "is_variable": false,
+     "upper_bounds": 1000,
+     "lower_bounds": 0,
+     "comment": "units [MW]"
+      },
+    "__thermal_plant2_north__:capacity": {
+     "type": "constant",
+     "value": 0.0,
+     "is_variable": true,
+     "upper_bounds": 3000,
+     "lower_bounds": 0,
+     "comment": "units [MW]"
+      },
+    "__thermal_plant1_south__:capacity": {
+     "type": "constant",
+     "value": 1000,
+     "is_variable": false,
+     "upper_bounds": 1000,
+     "lower_bounds": 0,
+     "comment": "units [MW]"
+      },
+    "__hydropower_plant_north__:capacity": {
+     "type": "constant",
+     "value": 1500,
+     "is_variable": false,
+     "upper_bounds": 1500,
+     "lower_bounds": 0,
+     "comment": "units [MW]"
+      },
+    "__hydropower_plant_south__:capacity": {
+     "type": "constant",
+     "value": 0,
+     "is_variable": true,
+     "upper_bounds": 1500,
+     "lower_bounds": 0,
+     "comment": "units [MW]"
+      },
+    "__transmission_line__:capacity": {
+     "type": "constant",
+     "value": 0.0,
+     "is_variable": true,
+     "upper_bounds": 3000,
+     "lower_bounds": 0,
+     "comment": "units [MW]"
+      } 
+},
+"recorders": {
+    "__thermal_plant2_north__:capacity_capex": {
+     "type": "MeanParameterRecorder",
+     "parameter": "__thermal_plant2_north__:capacity",
+     "factor": 130199,
+     "comment": "units [$/MW]"
+      },
+    "__hydropower_plant_south__:capacity_capex": {
+     "type": "MeanParameterRecorder",
+     "parameter": "__hydropower_plant_south__:capacity",
+     "factor": 90380,
+     "comment": "units [$/MW]"
+      },
+    "__transmission_line__:capacity_capex": {
+     "type": "MeanParameterRecorder",
+     "parameter": "__transmission_line__:capacity",
+     "factor": 5484,
+     "comment": "units [$/MW]"
+      },
+    "energy_infrastructure_total_capex": {
+     "type": "aggregated",
+     "recorder_agg_func": "sum",
+     "recorders": ["__thermal_plant2_north__:capacity_capex",
+                    "__hydropower_plant_south__:capacity_capex",
+                    "__transmission_line__:capacity_capex"],
+    "is_objective": null
+      },
+    "__thermal_plant1_north__:opex": {
+     "type": "TotalFlowNodeRecorder",
+     "node": "thermal_plant1_north",
+     "factor": 0.96,
+     "comment": "units [$/MWh]"
+      },
+    "__thermal_plant2_north__:opex": {
+     "type": "TotalFlowNodeRecorder",
+     "node": "thermal_plant2_north",
+     "factor": 2.22,
+     "comment": "units [$/MWh]" 
+      },
+    "__thermal_plant1_south__:opex": {
+     "type": "TotalFlowNodeRecorder",
+     "node": "thermal_plant1_south",
+     "factor": 4.28,
+     "comment": "units [$/MWh]"
+      },
+    "energy_total_opex": {
+     "type": "aggregated",
+     "recorder_agg_func": "sum",
+     "recorders": ["__thermal_plant1_north__:opex",
+                   "__thermal_plant2_north__:opex",
+                   "__thermal_plant1_south__:opex"],
+    "is_objective": null
+      },
+    "__energy_demand_north__:deficit_freq": {
+     "type": "deficitfrequencynodeRecorder",
+     "node": "energy_demand_north"
+      },
+    "__energy_demand_south__:deficit_freq": {
+     "type": "deficitfrequencynodeRecorder",
+     "node": "energy_demand_south"
+      },
+    "aggr_energy_deficit_freq": {
+     "type": "aggregatedrecorder",
+     "recorder_agg_func": "max",
+     "recorders": ["__energy_demand_north__:deficit_freq",
+                   "__energy_demand_south__:deficit_freq"
+                  ],
+    "is_objective": "minimise"
+      }
+  }
 }

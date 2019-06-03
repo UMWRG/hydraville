@@ -1,23 +1,47 @@
 {
     "nodes": [{
-            "name": "hydropower1_energy_generation",
+            "name": "hydropower_north_plant_generation",
             "type": "aggregatednode",
-            "nodes": [
-                "hydropower_plant1_generation",
-                "hydropower_plant1"
-            ],
-            "factors": [1.0, 54.5],
-            "comment": "Turbine factor = [flow -> m3/s]*[g]*[head]*[density]*[convert -> MWh/day] (1e6 / 3600 / 24) * 9.81 * 20 * 1000 * 24 * (1 / 1e6) = 9.81 * 20 / 3.6 = 54.5"
+            "nodes": ["hydropower_north_plant_flow",
+                      "hydropower_plant_north"],
+            "factors": [1.0,
+                        48.24],
+            "comment": "Turbine factor = [flow -> 1 Hm3/day -> 11.57 m3/s]*[g]*[head -> 500]*[density]*[convert -> MW /1e6] 0.85 * 1000 * 11.57 * 9.81 * 500 = 48.24"
         },
         {
-            "name": "hydropower2_energy_generation",
+            "name": "hydropower_south_plant_generation",
             "type": "aggregatednode",
-            "nodes": [
-                "hydropower_plant2_generation",
-                "hydropower_plant2"
-            ],
-            "factors": [1.0, 54.5],
-            "comment": "Turbine factor = [flow -> m3/s]*[g]*[head]*[density]*[convert -> MWh/day] (1e6 / 3600 / 24) * 9.81 * 20 * 1000 * 24 * (1 / 1e6) = 9.81 * 20 / 3.6 = 54.5"
+            "nodes": ["hydropower_south_plant_flow",
+                      "hydropower_plant_south"],
+            "factors": [1.0,
+                        48.24],
+            "comment": "Turbine factor = [flow -> 1 Hm3/day -> 11.57 m3/s]*[g]*[head -> 500]*[density]*[convert -> MW /1e6] 0.85 * 1000 * 11.57 * 9.81 * 500 = 48.24"
         }
-    ]
+    ],
+    "recorders": {
+            "total_system_cost": {
+             "type": "aggregated",
+             "recorder_agg_func": "sum",
+             "recorders": ["energy_infrastructure_total_capex",
+                           "energy_total_opex",
+                           "water_infrastructure_total_capex"],
+        "is_objective": "minimise"
+        },
+
+           "__hydropower_north_plant_generation__:MWh": {
+            "type": "TotalFlowNodeRecorder",
+            "node": "hydropower_north_plant_generation"
+            },
+           "__hydropower_south_plant_generation__:MWh": {
+            "type": "TotalFlowNodeRecorder",
+            "node": "hydropower_south_plant_generation"
+            },
+           "aggr_Hydropower_generation_MWh": {
+            "type": "aggregated",
+            "recorder_agg_func": "sum",
+            "recorders": ["__hydropower_north_plant_generation__:MWh",
+                          "__hydropower_south_plant_generation__:MWh"],
+        "is_objective": null
+            }
+    }
 }

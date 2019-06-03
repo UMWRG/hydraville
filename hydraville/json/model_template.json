@@ -6,16 +6,14 @@
     },
     "timestepper": {
         "start": "2015-01-01",
-        "end": "2019-12-31",
-        "timestep": 1
+        "end": "2045-12-31",
+        "timestep": "30"
     },
-    "scenarios":[
-        {
+    "scenarios": [{
             "name": "weather",
-            "size": 10,
-            "slice": [0,10],
+            "size": 181,
+            "slice": [0,20],
             "comment": "scenario_comninations: [0] or slice: [0,1]"
-        
         }
     ],
     "nodes": [],

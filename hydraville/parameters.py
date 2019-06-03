@@ -1,8 +1,9 @@
-from pywr.parameters import Parameter, load_dataframe, load_parameter
+from pywr.parameters import Parameter, load_dataframe, load_parameter, DataFrameParameter
 from pywr.parameters._parameters import wrap_const
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy import stats
+import pandas
 
 
 class DistributionParameter(Parameter):
