@@ -41,7 +41,7 @@ MODEL_OPTIONS = {
             'water_iwr'
         ]
     },
-    'energy-only': {
+    'energy-simple': {
         'template': 'model_template.json',
         'networks': [
             'energy'
@@ -68,20 +68,24 @@ def _create_model_from_context(context):
     ensembles = context.get('ensembles')
     seed = context.get('seed')
     model_options = context.get('model_options')
+    embed_external_data = context.get('embed_external_data', False)
 
     data = make_model(ensembles=ensembles, seed=seed,
                       parameter_templates=parameter_templates,
                       parameter_template_options=parameter_template_options,
+                      embed_external_data=embed_external_data,
                       **model_options
                       )
 
     # Validate the data by loading in Pywr
     out = context['out']
 
-    Model.loads(json.dumps(data), path=os.path.dirname(out))
+    str_data = json.dumps(data, indent=2)
+
+    Model.loads(str_data, path=os.path.dirname(out))
 
     with open(out, 'w') as fh:
-        json.dump(data, fh, indent=2)
+        fh.write(str_data)
 
 
 @cli.command()
@@ -90,8 +94,9 @@ def _create_model_from_context(context):
 @click.option('-d', '--dmu', type=click.Choice(DMU_OPTIONS.keys()), default=None)
 @click.option('-e', '--ensembles', type=int, default=None)
 @click.option('-s', '--seed', type=int, default=None)
+@click.option('--embed-data/--no-embed-data', default=False)
 @click.pass_obj
-def create(obj, out, model, dmu, ensembles, seed):
+def create(obj, out, model, dmu, ensembles, seed, embed_data):
     """ Create the Pywr JSON for a particular model configuration. """
     obj['out'] = out
     obj['model_options'] = MODEL_OPTIONS[model]
@@ -104,6 +109,7 @@ def create(obj, out, model, dmu, ensembles, seed):
 
     obj['ensembles'] = ensembles
     obj['seed'] = seed
+    obj['embed_external_data'] = embed_data
     _create_model_from_context(obj)
 
 
@@ -156,6 +162,27 @@ def run(filename):
 
     store.close()
 
+
+@cli.command('pp-dataframes')
+@click.argument('filename', type=click.Path(file_okay=True, dir_okay=False, exists=True))
+def postprocess_dataframes(filename):
+
+    directory, base_ext = os.path.split(filename)
+    output_directory = os.path.join(directory, 'figures')
+
+    with pandas.HDFStore(filename) as store:
+        for key in store.keys():
+            print(key)
+            name = key.strip('/')
+            fig, ax = plt.subplots()
+            df = store[key]
+            df.name = name
+            df.plot(kind='box', ax=ax)
+
+            fig.savefig(os.path.join(output_directory, f'{name}.png'), dpi=300)
+            fig.savefig(os.path.join(output_directory, f'{name}.eps'))
+
+
 @cli.command()
 @click.argument('filename', type=click.Path(file_okay=True, dir_okay=False, exists=True))
 def postprocess(filename):
@@ -163,18 +190,40 @@ def postprocess(filename):
     plt.rcParams.update({'figure.max_open_warning': 0})
 
     directory, base_ext = os.path.split(filename)
-    output_directory = os.path.join(directory, 'outputs', 'figures')
+    output_directory = os.path.join(directory, 'figures')
   
     with tables.open_file(filename) as fl:
-        tbl = fl._get_node('/time')
+        tbl = fl.get_node('/time')
         date_index = pandas.to_datetime({k: tbl.col(k) for k in ('year','month','day')})
+
+        tbl = fl.get_node('/scenarios')
+
+        labels = []
+        names = []
+        for row in tbl.iterrows():
+            print(row['name'], row['size'])
+            name = row['name'].decode()
+            size = row['size']
+
+            # TODO this is a bit of a hack because Pywr doesn't save the subset of scenarios
+            # that are actually run, just the total size.
+            if name == 'weather':
+                name = 'Weather'
+                size = 20
+
+            labels.append(list(range(size)))
+            names.append(name)
+
+        col_index = pandas.MultiIndex.from_product(labels, names=names)
+
         data = {}
         for ca in fl.walk_nodes('/', 'CArray'):
-            data[ca._v_name] = pandas.DataFrame(ca.read(), index=date_index)
+            # Pandas uses 2D data, but we use a multiindex for each scenario set.
+            arry = ca.read().reshape((ca.shape[0], -1))
+            data[ca._v_name] = pandas.DataFrame(arry, index=date_index, columns=col_index)
 
     df = pandas.concat(data, axis=1)
-    
-    FLOW_UNITS   = 'm^3'
+    FLOW_UNITS   = 'Hm^3'
     ENERGY_UNITS = 'MWh'
     PERCENTILES  = np.linspace(0,100)
 
@@ -184,16 +233,16 @@ def postprocess(filename):
         'catchment3'   : f'Catchment 3 inflow [${FLOW_UNITS}/day$]',
         'catchment4'   : f'Catchment 4 inflow [${FLOW_UNITS}/day$]',
         'catchment5'   : f'Catchment 5 inflow [${FLOW_UNITS}/day$]',
-        'irrigation1'  : f'Irrigation Sector 1 [${FLOW_UNITS}/day$]',
-        'irrigation2'  : f'Irrigation Sector 2 [${FLOW_UNITS}/day$]',
-        'water_supply1': f'Water Supply [${FLOW_UNITS}/day$]',
-        'reservoir1'   : f'Reservoir 1 Storage [${FLOW_UNITS}$]',
-        'reservoir2'   : f'Reservoir 2 Storage [${FLOW_UNITS}$]',
-        'turbine_energy_generation1': f'Hydropower 1 [${ENERGY_UNITS}$]',
-        'turbine_energy_generation2': f'Hydropower 2 [${ENERGY_UNITS}$]',
-        'thermal1'     : f'Thermal plant 1 [${ENERGY_UNITS}$]',
-        'thermal2'     : f'Thermal plant 2 [${ENERGY_UNITS}$]',
-        'thermal3'     : f'Thermal plant 3 [${ENERGY_UNITS}$]',
+#        'irrigation1'  : f'Irrigation Sector 1 [${FLOW_UNITS}/day$]',
+#        'irrigation2'  : f'Irrigation Sector 2 [${FLOW_UNITS}/day$]',
+#        'water_supply1': f'Water Supply [${FLOW_UNITS}/day$]',
+#        'reservoir1'   : f'Reservoir 1 Storage [${FLOW_UNITS}$]',
+#        'reservoir2'   : f'Reservoir 2 Storage [${FLOW_UNITS}$]',
+#        'turbine_energy_generation1': f'Hydropower 1 [${ENERGY_UNITS}$]',
+#        'turbine_energy_generation2': f'Hydropower 2 [${ENERGY_UNITS}$]',
+#        'thermal1'     : f'Thermal plant 1 [${ENERGY_UNITS}$]',
+#        'thermal2'     : f'Thermal plant 2 [${ENERGY_UNITS}$]',
+#        'thermal3'     : f'Thermal plant 3 [${ENERGY_UNITS}$]',
     }
 
 # TODO check this and make automatic with the labels
@@ -207,6 +256,7 @@ def postprocess(filename):
     for node in df.columns.levels[0]:
         fig, ax = plt.subplots(nrows=1, figsize=(12,4))
         df[node].plot(ax=ax, color='grey', alpha=0.5, legend=False)
+        df[node].mean(axis=1).plot(ax=ax, color='black', alpha=1.0, legend=False)
         
         try: 
             label = Y_LABEL_MAP[node]
