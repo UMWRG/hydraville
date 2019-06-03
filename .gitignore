@@ -110,7 +110,9 @@ venv.bak/
 
 # Project specific
 /data/*.h5
+/data/*.xls
 .vscode
 /water-energy_without-OR
 /test
 /test-JM
+*.sh

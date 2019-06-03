@@ -1,6 +1,7 @@
 import click
 import os
 import pandas
+import sys
 from pywr.model import Model
 from pywr.recorders import TablesRecorder
 from pywr.recorders.progress import ProgressRecorder
@@ -155,6 +156,27 @@ def run(filename):
 
     store.close()
 
+
+@cli.command('pp-dataframes')
+@click.argument('filename', type=click.Path(file_okay=True, dir_okay=False, exists=True))
+def postprocess_dataframes(filename):
+
+    directory, base_ext = os.path.split(filename)
+    output_directory = os.path.join(directory, 'figures')
+
+    with pandas.HDFStore(filename) as store:
+        for key in store.keys():
+            print(key)
+            name = key.strip('/')
+            fig, ax = plt.subplots()
+            df = store[key]
+            df.name = name
+            df.plot(kind='box', ax=ax)
+
+            fig.savefig(os.path.join(output_directory, f'{name}.png'), dpi=300)
+            fig.savefig(os.path.join(output_directory, f'{name}.eps'))
+
+
 @cli.command()
 @click.argument('filename', type=click.Path(file_okay=True, dir_okay=False, exists=True))
 def postprocess(filename):
@@ -162,17 +184,39 @@ def postprocess(filename):
     plt.rcParams.update({'figure.max_open_warning': 0})
 
     directory, base_ext = os.path.split(filename)
-    output_directory = os.path.join(directory, 'outputs', 'figures')
+    output_directory = os.path.join(directory, 'figures')
   
     with tables.open_file(filename) as fl:
-        tbl = fl._get_node('/time')
+        tbl = fl.get_node('/time')
         date_index = pandas.to_datetime({k: tbl.col(k) for k in ('year','month','day')})
+
+        tbl = fl.get_node('/scenarios')
+
+        labels = []
+        names = []
+        for row in tbl.iterrows():
+            print(row['name'], row['size'])
+            name = row['name'].decode()
+            size = row['size']
+
+            # TODO this is a bit of a hack because Pywr doesn't save the subset of scenarios
+            # that are actually run, just the total size.
+            if name == 'weather':
+                name = 'Weather'
+                size = 20
+
+            labels.append(list(range(size)))
+            names.append(name)
+
+        col_index = pandas.MultiIndex.from_product(labels, names=names)
+
         data = {}
         for ca in fl.walk_nodes('/', 'CArray'):
-            data[ca._v_name] = pandas.DataFrame(ca.read(), index=date_index)
+            # Pandas uses 2D data, but we use a multiindex for each scenario set.
+            arry = ca.read().reshape((ca.shape[0], -1))
+            data[ca._v_name] = pandas.DataFrame(arry, index=date_index, columns=col_index)
 
     df = pandas.concat(data, axis=1)
-    
     FLOW_UNITS   = 'Hm^3'
     ENERGY_UNITS = 'MWh'
     PERCENTILES  = np.linspace(0,100)
@@ -206,6 +250,7 @@ def postprocess(filename):
     for node in df.columns.levels[0]:
         fig, ax = plt.subplots(nrows=1, figsize=(12,4))
         df[node].plot(ax=ax, color='grey', alpha=0.5, legend=False)
+        df[node].mean(axis=1).plot(ax=ax, color='black', alpha=1.0, legend=False)
         
         try: 
             label = Y_LABEL_MAP[node]
@@ -246,12 +291,11 @@ def search(filename, seed, num_cpus, max_nfe, pop_size, algorithm, epsilons, div
 
     if seed is None:
         seed = random.randrange(sys.maxsize)
+    random.seed(seed)
 
     wrapper = PyretoJSONPlatypusWrapper(filename, search_data={'algorithm': algorithm, 'seed': seed,
                                                                'user_metadata':algorithm_kwargs},
                                         output_directory=output_directory)
-    if seed is not None:
-        random.seed(seed)
 
     logger.info('Starting model search.')
     if num_cpus is None:
