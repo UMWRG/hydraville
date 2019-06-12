@@ -25,13 +25,13 @@ class IrrigationWaterRequirementParameter(Parameter):
         self.conveyance_efficiency = conveyance_efficiency
 
     rainfall_parameter = parameter_property("_rainfall_parameter")
-    eto_parameter = parameter_property("_eto_parameter")
+    et_parameter = parameter_property("_et_parameter")
     crop_water_factor_parameter = parameter_property("_crop_water_factor_parameter")
 
     def value(self, timestep, scenario_index):
 
         effective_rainfall = self.rainfall_parameter.get_value(scenario_index)
-        et = self.eto_parameter.get_value(scenario_index)
+        et = self.et_parameter.get_value(scenario_index)
         crop_water_factor = self.crop_water_factor_parameter.get_value(scenario_index)
       
         # Calculate crop water requirement
@@ -74,44 +74,65 @@ class RelativeCropYieldRecorder(Recorder):
     `AggregatedParameter` containing only `IrrigationWaterRequirementParameter` parameters.
 
     """
-    def __init__(self, model, node, **kwargs):
+    def __init__(self, model, nodes, **kwargs):
         temporal_agg_func = kwargs.pop('temporal_agg_func', 'mean')
         super().__init__(model, **kwargs)
 
-        self._node_recorder = NumpyArrayNodeRecorder(model, node)
-        self.children.add(self._node_recorder)
-        self._parameter_recorder = NumpyArrayParameterRecorder(model, node.max_flow)
-        self.children.add(self._parameter_recorder)
+        node_recorders = []
+        parameter_recorders = []
+        for node in nodes:
+            rec = NumpyArrayNodeRecorder(model, node)
+            node_recorders.append(rec)
+            self.children.add(rec)
+
+            param_rec = NumpyArrayParameterRecorder(model, node.max_flow)
+            parameter_recorders.append(param_rec)
+            self.children.add(param_rec)
+
+        self._node_recorders = node_recorders
+        self._parameter_recorders = parameter_recorders
 
         self._temporal_aggregator = Aggregator(temporal_agg_func)
         self.effective_yield = None
 
     def finish(self):
 
-        actual = self._node_recorder.to_dataframe().resample('M').mean()
-        requirement = self._parameter_recorder.to_dataframe().resample('M').mean()
-        # TODO error checking on division by zero
-        curtailment_ratio = actual / requirement
-        # Annual minimum ratio
-        curtailment_ratio = curtailment_ratio.resample('A').min()
+        norm_crop_revenue = None
+        effective_yield = None
+        for (node_recorder, parameter_recorder) in zip(self._node_recorders, self._parameter_recorders):
 
-        # Here we assume this max_flow is some sort of aggregated parameter
-        crop_aggregated_parameter = self._node_recorder.node.max_flow
-        # Get first crop_revenue for normalisation
-        norm_crop_revenue = crop_aggregated_parameter.parameters[0].crop_revenue(curtailment_ratio)
-        # Create an empty array contain the accumulate yields
-        effective_yield = np.zeros_like(curtailment_ratio)
-
-        # Loop through all the crops
-        for parameter in crop_aggregated_parameter.parameters:
-            crop_revenue = parameter.crop_revenue(curtailment_ratio)
-            crop_yield = parameter.crop_yield(curtailment_ratio)
-            # Increment effective yield, scaled by the first crop's revenue
+            actual = node_recorder.to_dataframe().resample('M').mean()
+            requirement = parameter_recorder.to_dataframe().resample('M').mean()
             # TODO error checking on division by zero
-            effective_yield += crop_yield * crop_revenue / norm_crop_revenue
+            curtailment_ratio = actual / requirement
+            # Annual minimum ratio
+            curtailment_ratio = curtailment_ratio.resample('A').min()
+
+            # Here we assume this max_flow is some sort of aggregated parameter
+            crop_aggregated_parameter = node_recorder.node.max_flow
+            if norm_crop_revenue is None:
+                # Get first crop_revenue for normalisation
+                norm_crop_revenue = crop_aggregated_parameter.parameters[0].crop_revenue(curtailment_ratio)
+            if effective_yield is None:
+                # Create an empty array contain the accumulate yields
+                effective_yield = np.zeros_like(curtailment_ratio)
+
+            # Loop through all the crops
+            for parameter in crop_aggregated_parameter.parameters:
+                crop_revenue = parameter.crop_revenue(curtailment_ratio)
+                crop_yield = parameter.crop_yield(curtailment_ratio)
+                # Increment effective yield, scaled by the first crop's revenue
+                # TODO error checking on division by zero
+                effective_yield += crop_yield * crop_revenue / norm_crop_revenue
 
         self.effective_yield = effective_yield
 
     def values(self):
         return self._temporal_aggregator.aggregate_2d(self.effective_yield.values, axis=0, ignore_nan=self.ignore_nan)
+
+    @classmethod
+    def load(cls, model, data):
+        nodes = [model._get_node_from_ref(model, n) for n in data.pop('nodes')]
+        return cls(model, nodes, **data)
+
 RelativeCropYieldRecorder.register()
