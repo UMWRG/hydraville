@@ -562,6 +562,11 @@
                    "__water_supply_south__:deficit_freq"],
     "is_objective": "minimise"
     },
+    "__water_supply_south__:curtailment": {
+      "type": "NumpyArrayNodeCurtailmentRatioRecorder",
+      "node": "water_supply_south"
+    },
+
     "__reservoir_south__:capex": {
      "type": "MeanParameterRecorder",
      "parameter": "__reservoir_south__:capacity",

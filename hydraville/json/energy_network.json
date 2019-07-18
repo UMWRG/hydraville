@@ -260,6 +260,21 @@
                    "__energy_demand_south__:deficit_freq"
                   ],
     "is_objective": "minimise"
+      },
+    "__energy_demand_north__:curtailment": {
+     "type": "deficitfrequencynodeRecorder",
+     "node": "energy_demand_north"
+      },
+    "__energy_demand_south__:curtailment": {
+     "type": "deficitfrequencynodeRecorder",
+     "node": "energy_demand_south"
+      },
+    "aggr_energy_curtailment": {
+     "type": "aggregatedrecorder",
+     "recorder_agg_func": "mean",
+     "recorders": ["__energy_demand_north__:curtailment",
+                   "__energy_demand_south__:curtailment"
+                  ]
       }
   }
 }
