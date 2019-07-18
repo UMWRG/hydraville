@@ -128,7 +128,7 @@ class RelativeCropYieldRecorder(Recorder):
         self.effective_yield = effective_yield
 
     def values(self):
-        return self._temporal_aggregator.aggregate_2d(self.effective_yield.values, axis=0, ignore_nan=self.ignore_nan)
+        return self._temporal_aggregator.aggregate_2d(self.effective_yield, axis=0, ignore_nan=self.ignore_nan)
 
     @classmethod
     def load(cls, model, data):
