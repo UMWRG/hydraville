@@ -94,8 +94,24 @@ class RelativeCropYieldRecorder(Recorder):
 
         self._temporal_aggregator = Aggregator(temporal_agg_func)
         self.effective_yield = None
+        self._last_year_updated = None
+
+    def reset(self):
+        self.effective_yield = None
+        self._last_year_updated = None
 
     def after(self):
+        current_year = self.model.timestepper.current.year
+        if self._last_year_updated is None:
+            self._last_year_updated = current_year
+
+        if current_year > self._last_year_updated:
+            self._calc_effective_yield()
+
+    def finish(self):
+        self._calc_effective_yield()
+
+    def _calc_effective_yield(self):
 
         norm_crop_revenue = None
         effective_yield = None
@@ -113,6 +129,10 @@ class RelativeCropYieldRecorder(Recorder):
             if norm_crop_revenue is None:
                 # Get first crop_revenue for normalisation
                 norm_crop_revenue = crop_aggregated_parameter.parameters[0].crop_revenue(curtailment_ratio)
+
+                if np.any(np.abs(norm_crop_revenue) < 1e-6):
+                    raise ValueError('Can not normalise crop revenue because the first crop has zero revenue.')
+
             if effective_yield is None:
                 # Create an empty array contain the accumulate yields
                 effective_yield = np.zeros_like(curtailment_ratio)
@@ -128,7 +148,9 @@ class RelativeCropYieldRecorder(Recorder):
         self.effective_yield = effective_yield
 
     def values(self):
-        return self._temporal_aggregator.aggregate_2d(self.effective_yield, axis=0, ignore_nan=self.ignore_nan)
+        if self.effective_yield is not None:
+            return self._temporal_aggregator.aggregate_2d(np.asarray(self.effective_yield), axis=0, ignore_nan=self.ignore_nan)
+        return np.zeros(len(self.model.scenarios.combinations))
 
     @classmethod
     def load(cls, model, data):
