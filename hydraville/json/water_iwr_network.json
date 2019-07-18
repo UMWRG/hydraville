@@ -1,0 +1,110 @@
+{
+  "parameters": {
+        "rainfall": {
+            "type": "monthlyprofile",
+            "values": [0, 0.0000033, 0.00009, 0.000417, 0.00125, 0.00312, 0.0044, 0.00415, 0.0035, 0.0014, 0.000067, 0.0000033]
+        },
+
+        "et": {
+            "type": "monthlyprofile",
+            "values": [0.00643, 0.00712, 0.00785, 0.00812, 0.00731, 0.00546, 0.00388, 0.00344, 0.00393, 0.00469, 0.00529, 0.0058]
+        },
+
+        "irrigation_north:__iwr_sun_flower__": {
+          "type": "IrrigationWaterRequirement",
+          "rainfall_parameter": "rainfall",
+          "et_parameter": "et",
+          "crop_water_factor_parameter": {
+            "type": "monthlyprofile",
+            "values": [0, 0, 0, 0, 0, 0, 0.39, 0.91, 1.15, 0.94, 0.35, 0]
+          },
+          "area": 50000000,
+          "reference_et": 1,
+          "yield_per_area": 0.119,
+          "revenue_per_yield": 0.0589
+        },
+
+        "irrigation_north:__iwr_sesame__": {
+          "type": "IrrigationWaterRequirement",
+          "rainfall_parameter": "rainfall",
+          "et_parameter": "et",
+          "crop_water_factor_parameter": {
+            "type": "monthlyprofile",
+            "values": [0, 0, 0, 0, 0, 0, 0.68, 1.05, 0.59, 0.53, 0, 0]
+          },
+          "area": 10000000,
+          "reference_et": 1,
+          "yield_per_area": 0.2143,
+          "revenue_per_yield": 0.3656
+        },
+
+        "irrigation_north:__iwr_groundnut__": {
+          "type": "IrrigationWaterRequirement",
+          "rainfall_parameter": "rainfall",
+          "et_parameter": "et",
+          "crop_water_factor_parameter": {
+            "type": "monthlyprofile",
+            "values": [0, 0, 0, 0, 0, 0, 0.42, 0.96, 1.44, 1.08, 4.83, 0]
+          },
+          "area": 5000000,
+          "reference_et": 1,
+          "yield_per_area": 0.1785,
+          "revenue_per_yield": 0.0876
+        },
+
+        "irrigation_south:__iwr_sorghum__": {
+          "type": "IrrigationWaterRequirement",
+          "rainfall_parameter": "rainfall",
+          "et_parameter": "et",
+          "crop_water_factor_parameter": {
+            "type": "monthlyprofile",
+            "values": [0, 0, 0, 0, 0, 0, 0.39, 0.95, 1.1, 0.81, 1.96, 0]
+          },
+          "area": 10000000,
+          "reference_et": 1,
+          "yield_per_area": 0.21,
+          "revenue_per_yield": 0.0479
+        },
+
+
+        "irrigation_south:__iwr_groundnut__": {
+          "type": "IrrigationWaterRequirement",
+          "rainfall_parameter": "rainfall",
+          "et_parameter": "et",
+          "crop_water_factor_parameter": {
+            "type": "monthlyprofile",
+            "values": [0, 0, 0, 0, 0, 0, 0.42, 0.96, 1.44, 1.08, 4.83, 0]
+          },
+          "area": 5000000,
+          "reference_et": 1,
+          "yield_per_area": 0.1785,
+          "revenue_per_yield": 0.0876
+        },
+
+
+        "__irrigation_north__:demand": {
+          "type": "aggregated",
+          "agg_func": "sum",
+          "parameters": [
+            "irrigation_north:__iwr_sun_flower__",
+            "irrigation_north:__iwr_sesame__",
+            "irrigation_north:__iwr_groundnut__"
+          ]
+        },
+        "__irrigation_south__:demand": {
+          "type": "aggregated",
+          "agg_func": "sum",
+          "parameters": [
+            "irrigation_south:__iwr_sorghum__",
+            "irrigation_south:__iwr_groundnut__"
+          ]
+        }
+      },
+      "recorders": {
+        "irrigation_effective_yield": {
+          "type": "RelativeCropYieldRecorder",
+          "nodes": ["irrigation_north", "irrigation_south"],
+          "temporal_agg_func": "sum"
+        }
+    }
+}

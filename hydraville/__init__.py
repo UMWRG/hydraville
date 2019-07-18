@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from .parameters import AnnualInterpolationParameter, DistributionParameter, MonthlyDataFrameParameter
+from .crop_water import IrrigationWaterRequirementParameter
 from .recorders import FittedDistributionStorageRecorder, InterpolatedParameterRecorder, VolumeRiskStorageRecorder
 
 import os

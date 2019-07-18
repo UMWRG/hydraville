@@ -35,6 +35,13 @@ MODEL_OPTIONS = {
             'water'
         ]
     },
+    'water-iwr': {
+        'template': 'model_template.json',
+        'networks': [
+            'water',
+            'water_iwr'
+        ]
+    },
     'energy-simple': {
         'template': 'model_template.json',
         'networks': [
@@ -55,7 +62,7 @@ MODEL_OPTIONS = {
 SAMPLE_SIZES = (10, 25, 50, 100, 200)
 
 
-def _create_model_from_context(context):
+def _create_model_from_context(context, check_load=True):
 
     parameter_templates = context.get('parameter_templates', None)
     parameter_template_options = context.get('parameter_template_options', None)
@@ -76,7 +83,8 @@ def _create_model_from_context(context):
 
     str_data = json.dumps(data, indent=2)
 
-    Model.loads(str_data, path=os.path.dirname(out))
+    if check_load:
+        Model.loads(str_data, path=os.path.dirname(out))
 
     with open(out, 'w') as fh:
         fh.write(str_data)
@@ -89,8 +97,9 @@ def _create_model_from_context(context):
 @click.option('-e', '--ensembles', type=int, default=None)
 @click.option('-s', '--seed', type=int, default=None)
 @click.option('--embed-data/--no-embed-data', default=False)
+@click.option('--check-load/--no-check-load', default=True)
 @click.pass_obj
-def create(obj, out, model, dmu, ensembles, seed, embed_data):
+def create(obj, out, model, dmu, ensembles, seed, embed_data, check_load):
     """ Create the Pywr JSON for a particular model configuration. """
     obj['out'] = out
     obj['model_options'] = MODEL_OPTIONS[model]
@@ -104,7 +113,7 @@ def create(obj, out, model, dmu, ensembles, seed, embed_data):
     obj['ensembles'] = ensembles
     obj['seed'] = seed
     obj['embed_external_data'] = embed_data
-    _create_model_from_context(obj)
+    _create_model_from_context(obj, check_load=check_load)
 
 
 @cli.command()
