@@ -95,7 +95,7 @@ class RelativeCropYieldRecorder(Recorder):
         self._temporal_aggregator = Aggregator(temporal_agg_func)
         self.effective_yield = None
 
-    def finish(self):
+    def after(self):
 
         norm_crop_revenue = None
         effective_yield = None
