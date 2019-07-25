@@ -2,6 +2,7 @@ from pywr.parameters import Parameter, load_parameter
 from pywr.parameter_property import parameter_property
 from pywr.recorders import Recorder, NumpyArrayNodeRecorder, NumpyArrayParameterRecorder, Aggregator
 import numpy as np
+import pandas
 
 
 class IrrigationWaterRequirementParameter(Parameter):
@@ -65,7 +66,7 @@ class IrrigationWaterRequirementParameter(Parameter):
         return cls(model, rainfall_parameter, et_parameter, cwf_parameter, **data)
 IrrigationWaterRequirementParameter.register()
 
-#Mohammed: How does it work when two schemes have diffrent crops? which base-crop does it use to weight the other crops?
+
 class RelativeCropYieldRecorder(Recorder):
     """Relative crop yield recorder.
 
@@ -78,79 +79,63 @@ class RelativeCropYieldRecorder(Recorder):
         temporal_agg_func = kwargs.pop('temporal_agg_func', 'mean')
         super().__init__(model, **kwargs)
 
-        node_recorders = []
-        parameter_recorders = []
         for node in nodes:
-            rec = NumpyArrayNodeRecorder(model, node)
-            node_recorders.append(rec)
-            self.children.add(rec)
+            max_flow_param = node.max_flow
+            self.children.add(max_flow_param)
 
-            param_rec = NumpyArrayParameterRecorder(model, node.max_flow)
-            parameter_recorders.append(param_rec)
-            self.children.add(param_rec)
-
-        self._node_recorders = node_recorders
-        self._parameter_recorders = parameter_recorders
-
+        self.nodes = nodes
         self._temporal_aggregator = Aggregator(temporal_agg_func)
-        self.effective_yield = None
-        self._last_year_updated = None
+        self.data = None
+
+    def setup(self):
+        ncomb = len(self.model.scenarios.combinations)
+        nts = len(self.model.timestepper)
+        self.data = np.zeros((nts, ncomb))
 
     def reset(self):
-        self.effective_yield = None
-        self._last_year_updated = None
+        self.data[:, :] = 0.0
 
     def after(self):
-        current_year = self.model.timestepper.current.year
-        if self._last_year_updated is None:
-            self._last_year_updated = current_year
-
-        if current_year > self._last_year_updated:
-            self._calc_effective_yield()
-
-    def finish(self):
-        self._calc_effective_yield()
-
-    def _calc_effective_yield(self):
 
         norm_crop_revenue = None
-        effective_yield = None
-        for (node_recorder, parameter_recorder) in zip(self._node_recorders, self._parameter_recorders):
+        ts = self.model.timestepper.current
+        self.data[ts.index, :] = 0
 
-            actual = node_recorder.to_dataframe().resample('M').mean()
-            requirement = parameter_recorder.to_dataframe().resample('M').mean()
-            # TODO error checking on division by zero
-            curtailment_ratio = actual / requirement
-            # Annual minimum ratio
-            curtailment_ratio = curtailment_ratio.resample('A').min()
+        for node in self.nodes:
+            crop_aggregated_parameter = node.max_flow
+            actual = node.flow
+            requirement = np.array(crop_aggregated_parameter.get_all_values())
+            # Divide non-zero elements
+            curtailment_ratio = np.divide(actual, requirement, out=np.zeros_like(actual), where=requirement != 0)
 
-            # Here we assume this max_flow is some sort of aggregated parameter
-            crop_aggregated_parameter = node_recorder.node.max_flow
             if norm_crop_revenue is None:
-                # Get first crop_revenue for normalisation
                 norm_crop_revenue = crop_aggregated_parameter.parameters[0].crop_revenue(curtailment_ratio)
 
-                if np.any(np.abs(norm_crop_revenue) < 1e-6):
-                    raise ValueError('Can not normalise crop revenue because the first crop has zero revenue.')
-
-            if effective_yield is None:
-                # Create an empty array contain the accumulate yields
-                effective_yield = np.zeros_like(curtailment_ratio)
-
-            # Loop through all the crops
             for parameter in crop_aggregated_parameter.parameters:
                 crop_revenue = parameter.crop_revenue(curtailment_ratio)
                 crop_yield = parameter.crop_yield(curtailment_ratio)
                 # Increment effective yield, scaled by the first crop's revenue
-                # TODO error checking on division by zero
-                effective_yield += crop_yield * crop_revenue / norm_crop_revenue
 
-        self.effective_yield = effective_yield
+                self.data[ts.index, :] += crop_yield * np.divide(crop_revenue, norm_crop_revenue,
+                                                                 out=np.zeros_like(crop_revenue),
+                                                                 where=norm_crop_revenue != 0)
 
     def values(self):
-        if self.effective_yield is not None:
-            return self._temporal_aggregator.aggregate_2d(np.asarray(self.effective_yield), axis=0, ignore_nan=self.ignore_nan)
-        return np.zeros(len(self.model.scenarios.combinations))
+        """Compute a value for each scenario using `temporal_agg_func`.
+        """
+        return self._temporal_aggregator.aggregate_2d(self.data, axis=0, ignore_nan=self.ignore_nan)
+
+    def to_dataframe(self):
+        """ Return a `pandas.DataFrame` of the recorder data
+
+        This DataFrame contains a MultiIndex for the columns with the recorder name
+        as the first level and scenario combination names as the second level. This
+        allows for easy combination with multiple recorder's DataFrames
+        """
+        index = self.model.timestepper.datetime_index
+        sc_index = self.model.scenarios.multiindex
+
+        return pandas.DataFrame(data=np.array(self.data), index=index, columns=sc_index)
 
     @classmethod
     def load(cls, model, data):
