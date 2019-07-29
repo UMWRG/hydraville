@@ -98,6 +98,7 @@ class RelativeCropYieldRecorder(Recorder):
     def after(self):
 
         norm_crop_revenue = None
+        full_norm_crop_revenue = None
         ts = self.model.timestepper.current
         self.data[ts.index, :] = 0
 
@@ -107,18 +108,27 @@ class RelativeCropYieldRecorder(Recorder):
             requirement = np.array(crop_aggregated_parameter.get_all_values())
             # Divide non-zero elements
             curtailment_ratio = np.divide(actual, requirement, out=np.zeros_like(actual), where=requirement != 0)
+            no_curtailment = np.ones_like(curtailment_ratio)
 
             if norm_crop_revenue is None:
                 norm_crop_revenue = crop_aggregated_parameter.parameters[0].crop_revenue(curtailment_ratio)
+                full_norm_crop_revenue = crop_aggregated_parameter.parameters[0].crop_revenue(no_curtailment)
 
             for parameter in crop_aggregated_parameter.parameters:
                 crop_revenue = parameter.crop_revenue(curtailment_ratio)
+                full_crop_revenue = parameter.crop_revenue(no_curtailment)
                 crop_yield = parameter.crop_yield(curtailment_ratio)
+                full_crop_yield = parameter.crop_yield(no_curtailment)
                 # Increment effective yield, scaled by the first crop's revenue
+                norm_yield = crop_yield * np.divide(crop_revenue, norm_crop_revenue,
+                                                    out=np.zeros_like(crop_revenue),
+                                                    where=norm_crop_revenue != 0)
 
-                self.data[ts.index, :] += crop_yield * np.divide(crop_revenue, norm_crop_revenue,
-                                                                 out=np.zeros_like(crop_revenue),
-                                                                 where=norm_crop_revenue != 0)
+                full_norm_yield = full_crop_yield * np.divide(full_crop_revenue, full_norm_crop_revenue,
+                                                              out=np.ones_like(full_crop_revenue),
+                                                              where=full_norm_crop_revenue != 0)
+
+                self.data[ts.index, :] += norm_yield / full_crop_revenue
 
     def values(self):
         """Compute a value for each scenario using `temporal_agg_func`.
