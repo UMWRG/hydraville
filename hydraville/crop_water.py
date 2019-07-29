@@ -128,7 +128,7 @@ class RelativeCropYieldRecorder(Recorder):
                                                               out=np.ones_like(full_crop_revenue),
                                                               where=full_norm_crop_revenue != 0)
 
-                self.data[ts.index, :] += norm_yield / full_crop_revenue
+                self.data[ts.index, :] += norm_yield / full_norm_yield
 
     def values(self):
         """Compute a value for each scenario using `temporal_agg_func`.
