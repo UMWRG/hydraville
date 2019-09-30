@@ -16,9 +16,9 @@
           "et_parameter": "et",
           "crop_water_factor_parameter": {
             "type": "monthlyprofile",
-            "values": [0, 0, 0, 0, 0, 0, 0.39, 0.91, 1.15, 0.94, 0.35, 0]
+            "values": [0.39, 0.39, 0.39, 0.39, 0.39, 0.39, 0.39, 0.91, 1.15, 0.94, 0.35, 0.39]
           },
-          "area": 50000000,
+          "area": 500,
           "reference_et": 1,
           "yield_per_area": 0.119,
           "revenue_per_yield": 0.0589
@@ -32,7 +32,7 @@
             "type": "monthlyprofile",
             "values": [0, 0, 0, 0, 0, 0, 0.68, 1.05, 0.59, 0.53, 0, 0]
           },
-          "area": 10000000,
+          "area": 100,
           "reference_et": 1,
           "yield_per_area": 0.2143,
           "revenue_per_yield": 0.3656
@@ -46,7 +46,7 @@
             "type": "monthlyprofile",
             "values": [0, 0, 0, 0, 0, 0, 0.42, 0.96, 1.44, 1.08, 4.83, 0]
           },
-          "area": 5000000,
+          "area": 500,
           "reference_et": 1,
           "yield_per_area": 0.1785,
           "revenue_per_yield": 0.0876
@@ -58,9 +58,9 @@
           "et_parameter": "et",
           "crop_water_factor_parameter": {
             "type": "monthlyprofile",
-            "values": [0, 0, 0, 0, 0, 0, 0.39, 0.95, 1.1, 0.81, 1.96, 0]
+            "values": [0.39, 0.39, 0.39, 0.39, 0.39, 0.39, 0.39, 0.91, 1.15, 0.94, 0.35, 0.39]
           },
-          "area": 10000000,
+          "area": 100,
           "reference_et": 1,
           "yield_per_area": 0.21,
           "revenue_per_yield": 0.0479
@@ -75,7 +75,7 @@
             "type": "monthlyprofile",
             "values": [0, 0, 0, 0, 0, 0, 0.42, 0.96, 1.44, 1.08, 4.83, 0]
           },
-          "area": 5000000,
+          "area": 500,
           "reference_et": 1,
           "yield_per_area": 0.1785,
           "revenue_per_yield": 0.0876
