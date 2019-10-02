@@ -101,6 +101,8 @@ class RelativeCropYieldRecorder(Recorder):
         full_norm_crop_revenue = None
         ts = self.model.timestepper.current
         self.data[ts.index, :] = 0
+        norm_yield = 0
+        full_norm_yield = 0
 
         for node in self.nodes:
             crop_aggregated_parameter = node.max_flow
@@ -120,15 +122,18 @@ class RelativeCropYieldRecorder(Recorder):
                 crop_yield = parameter.crop_yield(curtailment_ratio)
                 full_crop_yield = parameter.crop_yield(no_curtailment)
                 # Increment effective yield, scaled by the first crop's revenue
-                norm_yield = crop_yield * np.divide(crop_revenue, norm_crop_revenue,
+                norm_yield += crop_yield * np.divide(crop_revenue, norm_crop_revenue,
                                                     out=np.zeros_like(crop_revenue),
                                                     where=norm_crop_revenue != 0)
 
-                full_norm_yield = full_crop_yield * np.divide(full_crop_revenue, full_norm_crop_revenue,
+                full_norm_yield += full_crop_yield * np.divide(full_crop_revenue, full_norm_crop_revenue,
                                                               out=np.ones_like(full_crop_revenue),
                                                               where=full_norm_crop_revenue != 0)
-
-                self.data[ts.index, :] += norm_yield / full_norm_yield
+                
+                if requirement<0.00001:
+                    self.data[ts.index, :] = 99999
+                else:
+                    self.data[ts.index, :] = norm_yield / full_norm_yield
 
     def values(self):
         """Compute a value for each scenario using `temporal_agg_func`.
