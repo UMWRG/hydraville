@@ -1,0 +1,1032 @@
+{
+  "metadata": {
+    "title": "Water Network Integrated pywr-MOEA",
+    "description": "Model to test the concept of couple a water-energy simulation model with an expansion planning MOEA model",
+    "minimum_version": "0.5"
+  },
+  "timestepper": {
+    "start": "2015-01-01",
+    "end": "2045-12-31",
+    "timestep": "30"
+  },
+  "scenarios": [
+    {
+      "name": "weather",
+      "size": 180,
+      "slice": [
+        0,
+        20
+      ],
+      "comment": "scenario_comninations: [0] or slice: [0,1]"
+    },
+    {
+      "name": "W Demands",
+      "size": 3,
+      "ensemble_names": [
+        "First",
+        "Second",
+        "Third"
+      ]
+    },
+    {
+      "name": "E Demands",
+      "size": 3,
+      "ensemble_names": [
+        "First",
+        "Second",
+        "Third"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "catchment1",
+      "type": "catchment",
+      "flow": "__catchment1__:inflow",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "catchment2",
+      "type": "catchment",
+      "flow": "__catchment2__:inflow",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "catchment3",
+      "type": "catchment",
+      "flow": "__catchment3__:inflow",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "catchment4",
+      "type": "catchment",
+      "flow": "__catchment4__:inflow",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "catchment5",
+      "type": "catchment",
+      "flow": "__catchment5__:inflow",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "junction1_north",
+      "type": "link",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "recombined_irrigation_north",
+      "type": "link",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "recombined_reservoir_north",
+      "type": "link",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "junction2_north",
+      "type": "link",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "recombined_reservoir_south",
+      "type": "link",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "junction1_south",
+      "type": "link",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "reservoir_north",
+      "type": "storage",
+      "initial_volume_pc": 0.5,
+      "max_volume": "__reservoir_north__:capacity",
+      "cost": -200,
+      "comment": "units [hm^3]"
+    },
+    {
+      "name": "reservoir_south",
+      "type": "storage",
+      "initial_volume_pc": 0.5,
+      "max_volume": "__reservoir_south__:capacity",
+      "cost": -200,
+      "comment": "units [hm^3]"
+    },
+    {
+      "name": "spill_R_north",
+      "type": "river",
+      "cost": 500,
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "spill_R_south",
+      "type": "river",
+      "cost": 500,
+      "comment": "units [hm^3]"
+    },
+    {
+      "name": "hydropower_north_plant_flow",
+      "type": "river",
+      "max_flow": "__hydropower_north_plant__:control",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "hydropower_south_plant_flow",
+      "type": "river",
+      "max_flow": "__hydropower_south_plant__:control",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "irrigation_north_canal1",
+      "type": "link",
+      "max_flow": "__existing_irrigation_canal_north__:capacity",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "irrigation_north_canal2",
+      "type": "link",
+      "max_flow": "__irrigation_north__:control",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "irrigation_south_canal",
+      "type": "link",
+      "max_flow": "__irrigation_south__:control",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "water_supply_south_canal",
+      "type": "link",
+      "max_flow": "__water_supply_south__:control",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "irrigation_north",
+      "type": "Output",
+      "max_flow": "__irrigation_north__:demand",
+      "cost": "__irrigation_north__:penalty",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "return_flow_irrigation_north",
+      "type": "input",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "irrigation_north_return_ratio",
+      "type": "aggregatednode",
+      "factors": [
+        1,
+        0.15
+      ],
+      "nodes": [
+        "irrigation_north",
+        "return_flow_irrigation_north"
+      ]
+    },
+    {
+      "name": "water_supply_north",
+      "type": "Output",
+      "max_flow": "__water_supply_north__:demand",
+      "cost": "__water_supply_north__:penalty",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "irrigation_south",
+      "type": "Output",
+      "max_flow": "__irrigation_south__:demand",
+      "cost": "__irrigation_south__:penalty",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "return_flow_irrigation_south",
+      "type": "input"
+    },
+    {
+      "name": "irrigation_south_return_ratio",
+      "type": "aggregatednode",
+      "factors": [
+        1,
+        0.15
+      ],
+      "nodes": [
+        "irrigation_south",
+        "return_flow_irrigation_south"
+      ]
+    },
+    {
+      "name": "water_supply_south",
+      "type": "Output",
+      "max_flow": "__water_supply_south__:demand",
+      "cost": "__water_supply_south__:penalty",
+      "comment": "units [hm^3/day]"
+    },
+    {
+      "name": "term1",
+      "type": "output"
+    },
+    {
+      "name": "thermal_plant1_north",
+      "type": "input",
+      "cost": 0.96,
+      "max_flow": "__thermal_plant1_north__:capacity"
+    },
+    {
+      "name": "thermal_plant2_north",
+      "type": "input",
+      "cost": 2.22,
+      "max_flow": "__thermal_plant2_north__:capacity"
+    },
+    {
+      "name": "thermal_plant1_south",
+      "type": "input",
+      "cost": 4.28,
+      "max_flow": "__thermal_plant1_south__:capacity"
+    },
+    {
+      "name": "hydropower_plant_north",
+      "type": "input",
+      "max_flow": "__hydropower_plant_north__:capacity"
+    },
+    {
+      "name": "hydropower_plant_south",
+      "type": "input",
+      "max_flow": "__hydropower_plant_south__:capacity"
+    },
+    {
+      "name": "energy_demand_north",
+      "type": "output",
+      "max_flow": "__energy_demand__:north",
+      "cost": "__energy_demand_north__:penalty"
+    },
+    {
+      "name": "energy_demand_south",
+      "type": "output",
+      "max_flow": "__energy_demand__:south",
+      "cost": "__energy_demand_south__:penalty"
+    },
+    {
+      "name": "substation_north",
+      "type": "link"
+    },
+    {
+      "name": "substation_south",
+      "type": "link"
+    },
+    {
+      "name": "transmission_line_north_south",
+      "type": "link",
+      "max_flow": "__transmission_line__:capacity"
+    },
+    {
+      "name": "hydropower_north_plant_generation",
+      "type": "aggregatednode",
+      "nodes": [
+        "hydropower_north_plant_flow",
+        "hydropower_plant_north"
+      ],
+      "factors": [
+        1.0,
+        48.24
+      ],
+      "comment": "Turbine factor = [flow -> 1 Hm3/day -> 11.57 m3/s]*[g]*[head -> 500]*[density]*[convert -> MW /1e6] 0.85 * 1000 * 11.57 * 9.81 * 500 = 48.24"
+    },
+    {
+      "name": "hydropower_south_plant_generation",
+      "type": "aggregatednode",
+      "nodes": [
+        "hydropower_south_plant_flow",
+        "hydropower_plant_south"
+      ],
+      "factors": [
+        1.0,
+        48.24
+      ],
+      "comment": "Turbine factor = [flow -> 1 Hm3/day -> 11.57 m3/s]*[g]*[head -> 500]*[density]*[convert -> MW /1e6] 0.85 * 1000 * 11.57 * 9.81 * 500 = 48.24"
+    }
+  ],
+  "edges": [
+    [
+      "catchment1",
+      "junction1_north"
+    ],
+    [
+      "junction1_north",
+      "irrigation_north_canal1"
+    ],
+    [
+      "irrigation_north_canal1",
+      "irrigation_north"
+    ],
+    [
+      "return_flow_irrigation_north",
+      "recombined_irrigation_north"
+    ],
+    [
+      "junction1_north",
+      "recombined_irrigation_north"
+    ],
+    [
+      "catchment3",
+      "recombined_irrigation_north"
+    ],
+    [
+      "recombined_irrigation_north",
+      "reservoir_south"
+    ],
+    [
+      "catchment2",
+      "reservoir_north"
+    ],
+    [
+      "reservoir_north",
+      "irrigation_north_canal2"
+    ],
+    [
+      "irrigation_north_canal2",
+      "irrigation_north"
+    ],
+    [
+      "reservoir_north",
+      "spill_R_north"
+    ],
+    [
+      "reservoir_north",
+      "hydropower_north_plant_flow"
+    ],
+    [
+      "spill_R_north",
+      "recombined_reservoir_north"
+    ],
+    [
+      "hydropower_north_plant_flow",
+      "recombined_reservoir_north"
+    ],
+    [
+      "recombined_reservoir_north",
+      "junction2_north"
+    ],
+    [
+      "junction2_north",
+      "water_supply_north"
+    ],
+    [
+      "junction2_north",
+      "reservoir_south"
+    ],
+    [
+      "catchment4",
+      "reservoir_south"
+    ],
+    [
+      "reservoir_south",
+      "water_supply_south_canal"
+    ],
+    [
+      "water_supply_south_canal",
+      "water_supply_south"
+    ],
+    [
+      "reservoir_south",
+      "hydropower_south_plant_flow"
+    ],
+    [
+      "hydropower_south_plant_flow",
+      "recombined_reservoir_south"
+    ],
+    [
+      "reservoir_south",
+      "irrigation_south_canal"
+    ],
+    [
+      "irrigation_south_canal",
+      "irrigation_south"
+    ],
+    [
+      "catchment5",
+      "junction1_south"
+    ],
+    [
+      "junction1_south",
+      "irrigation_south"
+    ],
+    [
+      "return_flow_irrigation_south",
+      "recombined_reservoir_south"
+    ],
+    [
+      "junction1_south",
+      "recombined_reservoir_south"
+    ],
+    [
+      "reservoir_south",
+      "spill_R_south"
+    ],
+    [
+      "spill_R_south",
+      "recombined_reservoir_south"
+    ],
+    [
+      "recombined_reservoir_south",
+      "term1"
+    ],
+    [
+      "thermal_plant1_north",
+      "substation_north"
+    ],
+    [
+      "thermal_plant2_north",
+      "substation_north"
+    ],
+    [
+      "hydropower_plant_north",
+      "substation_north"
+    ],
+    [
+      "thermal_plant1_south",
+      "substation_south"
+    ],
+    [
+      "hydropower_plant_south",
+      "substation_south"
+    ],
+    [
+      "substation_north",
+      "transmission_line_north_south"
+    ],
+    [
+      "transmission_line_north_south",
+      "substation_north"
+    ],
+    [
+      "transmission_line_north_south",
+      "substation_south"
+    ],
+    [
+      "substation_south",
+      "transmission_line_north_south"
+    ],
+    [
+      "substation_north",
+      "energy_demand_north"
+    ],
+    [
+      "substation_south",
+      "energy_demand_south"
+    ]
+  ],
+  "parameters": {
+    "__catchment1__:inflow": {
+      "type": "dataframe",
+      "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
+      "scenario": "weather",
+      "key": "catchment1_cntr",
+      "comment": "units [hm^3/day]"
+    },
+    "__catchment2__:inflow": {
+      "type": "dataframe",
+      "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
+      "scenario": "weather",
+      "key": "catchment2_cntr",
+      "comment": "units [hm^3/day]"
+    },
+    "__catchment3__:inflow": {
+      "type": "dataframe",
+      "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
+      "scenario": "weather",
+      "key": "catchment3_cntr",
+      "comment": "units [hm^3/day]"
+    },
+    "__catchment4__:inflow": {
+      "type": "dataframe",
+      "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
+      "scenario": "weather",
+      "key": "catchment4_cntr",
+      "comment": "units [hm^3/day]"
+    },
+    "__catchment5__:inflow": {
+      "type": "dataframe",
+      "url": "../../data/catchmod_flows_by_catchment_sub200.h5",
+      "scenario": "weather",
+      "key": "catchment5_cntr",
+      "comment": "units [hm^3/day]"
+    },
+    "W_Demand_Factor": {
+      "type": "constantscenario",
+      "scenario": "W Demands",
+      "values": [
+        1,
+        1.02,
+        1.04
+      ]
+    },
+    "water_supply_north_expected_demand": {
+      "type": "dataframe",
+      "url": "../../data/we-demand_data_v2.0.xls",
+      "index_col": "timestamp",
+      "column": "water_supply_north_demand",
+      "comment": "units [hm^3/day]"
+    },
+    "__water_supply_north__:demand": {
+      "type": "aggregated",
+      "agg_func": "product",
+      "parameters": [
+        "water_supply_north_expected_demand",
+        "W_Demand_Factor"
+      ]
+    },
+    "irrigation_north_expected_demand": {
+      "type": "dataframe",
+      "url": "../../data/we-demand_data_v2.0.xls",
+      "index_col": "timestamp",
+      "column": "irrigation_north_demand",
+      "comment": "units [hm^3/day]"
+    },
+    "__irrigation_north__:demand": {
+      "type": "aggregated",
+      "agg_func": "product",
+      "parameters": [
+        "irrigation_north_expected_demand",
+        "W_Demand_Factor"
+      ]
+    },
+    "irrigation_south_expected_demand": {
+      "type": "dataframe",
+      "url": "../../data/we-demand_data_v2.0.xls",
+      "index_col": "timestamp",
+      "column": "irrigation_south_demand",
+      "comment": "units [hm^3/day]"
+    },
+    "__irrigation_south__:demand": {
+      "type": "aggregated",
+      "agg_func": "product",
+      "parameters": [
+        "irrigation_south_expected_demand",
+        "W_Demand_Factor"
+      ]
+    },
+    "water_supply_south_expected_demand": {
+      "type": "dataframe",
+      "url": "../../data/we-demand_data_v2.0.xls",
+      "index_col": "timestamp",
+      "column": "water_supply_south_demand",
+      "comment": "units [hm^3/day]"
+    },
+    "__water_supply_south__:demand": {
+      "type": "aggregated",
+      "agg_func": "product",
+      "parameters": [
+        "water_supply_south_expected_demand",
+        "W_Demand_Factor"
+      ]
+    },
+    "__reservoir_north__:capacity": {
+      "type": "constant",
+      "value": 1500,
+      "is_variable": false,
+      "upper_bounds": 1500,
+      "lower_bounds": 0,
+      "comment": "units [hm^3]"
+    },
+    "__reservoir_south__:capacity": {
+      "type": "constant",
+      "value": 0,
+      "is_variable": true,
+      "upper_bounds": 1500,
+      "lower_bounds": 0,
+      "comment": "units [hm^3]"
+    },
+    "__irrigation_north__:control": {
+      "type": "controlcurve",
+      "storage_node": "reservoir_north",
+      "control_curve": "irrigation_north_cc",
+      "parameters": [
+        "__new_irrigation_canal_north__:capacity",
+        "canal_zero"
+      ]
+    },
+    "irrigation_north_cc": {
+      "type": "constant",
+      "value": 0.5,
+      "upper_bounds": 1.0,
+      "lower_bounds": 0.0,
+      "is_variable": true
+    },
+    "__existing_irrigation_canal_north__:capacity": {
+      "type": "constant",
+      "value": 1.5,
+      "is_variable": false,
+      "upper_bounds": 1.5,
+      "lower_bounds": 0,
+      "comment": "units [hm^3/day]"
+    },
+    "__new_irrigation_canal_north__:capacity": {
+      "type": "constant",
+      "value": 0.0,
+      "is_variable": true,
+      "upper_bounds": 5.0,
+      "lower_bounds": 0,
+      "comment": "units [hm^3/day]"
+    },
+    "__irrigation_south__:control": {
+      "type": "controlcurve",
+      "storage_node": "reservoir_south",
+      "control_curve": "irrigation_south_cc",
+      "parameters": [
+        "__existing_irrigation_canal_south__:capacity",
+        "canal_zero"
+      ]
+    },
+    "irrigation_south_cc": {
+      "type": "constant",
+      "value": 0.5,
+      "upper_bounds": 1.0,
+      "lower_bounds": 0.0,
+      "is_variable": true
+    },
+    "__existing_irrigation_canal_south__:capacity": {
+      "type": "constant",
+      "value": 9.0,
+      "is_variable": false,
+      "upper_bounds": 9.0,
+      "lower_bounds": 0,
+      "comment": "units [hm^3/day]"
+    },
+    "__water_supply_south__:control": {
+      "type": "controlcurve",
+      "storage_node": "reservoir_south",
+      "control_curve": "water_supply_south_cc",
+      "parameters": [
+        "__existing_water_supply_canal_south__:capacity",
+        "canal_zero"
+      ]
+    },
+    "water_supply_south_cc": {
+      "type": "constant",
+      "value": 0.5,
+      "upper_bounds": 1.0,
+      "lower_bounds": 0.0,
+      "is_variable": true
+    },
+    "__existing_water_supply_canal_south__:capacity": {
+      "type": "constant",
+      "value": 9.0,
+      "is_variable": false,
+      "upper_bounds": 9.0,
+      "lower_bounds": 0,
+      "comment": "units [hm^3/day]"
+    },
+    "canal_zero": {
+      "type": "constant",
+      "value": 0.0,
+      "is_variable": false,
+      "upper_bounds": 0.0,
+      "lower_bounds": 0.0,
+      "comment": "units [hm^3/day]"
+    },
+    "__hydropower_north_plant__:control": {
+      "type": "controlcurve",
+      "storage_node": "reservoir_north",
+      "control_curve": "hydropower_north_plant_cc1",
+      "parameters": [
+        "hydropower_north_plant_above",
+        "hydropower_north_plant_below"
+      ]
+    },
+    "hydropower_north_plant_cc1": {
+      "type": "constant",
+      "value": 0.5,
+      "upper_bounds": 1.0,
+      "lower_bounds": 0.0,
+      "is_variable": true
+    },
+    "hydropower_north_plant_above": {
+      "type": "constant",
+      "value": 30,
+      "upper_bounds": 30,
+      "lower_bounds": 0.0,
+      "is_variable": true,
+      "comment": "units [hm^3/day]"
+    },
+    "hydropower_north_plant_below": {
+      "type": "constant",
+      "value": 0.0
+    },
+    "__hydropower_south_plant__:control": {
+      "type": "controlcurve",
+      "storage_node": "reservoir_south",
+      "control_curve": "hydropower_south_plant_cc1",
+      "parameters": [
+        "hydropower_south_plant_above",
+        "hydropower_south_plant_below"
+      ]
+    },
+    "hydropower_south_plant_cc1": {
+      "type": "constant",
+      "value": 0.5,
+      "upper_bounds": 1.0,
+      "lower_bounds": 0.0,
+      "is_variable": true
+    },
+    "hydropower_south_plant_above": {
+      "type": "constant",
+      "value": 30,
+      "upper_bounds": 30,
+      "lower_bounds": 0.0,
+      "is_variable": true,
+      "comment": "units [hm^3/day]"
+    },
+    "hydropower_south_plant_below": {
+      "type": "constant",
+      "value": 0.0
+    },
+    "E_Demand_Factor": {
+      "type": "constantscenario",
+      "scenario": "E Demands",
+      "values": [
+        1,
+        1.02,
+        1.04
+      ]
+    },
+    "energy_expected_demand_north": {
+      "type": "dataframe",
+      "url": "../../data/we-demand_data_v2.0.xls",
+      "index_col": "timestamp",
+      "column": "energy_demand_north",
+      "comment": "units [MWh]"
+    },
+    "__energy_demand__:north": {
+      "type": "aggregated",
+      "agg_func": "product",
+      "parameters": [
+        "energy_expected_demand_north",
+        "E_Demand_Factor"
+      ]
+    },
+    "energy_expected_demand_south": {
+      "type": "dataframe",
+      "url": "../../data/we-demand_data_v2.0.xls",
+      "index_col": "timestamp",
+      "column": "energy_demand_south",
+      "comment": "units [MWh]"
+    },
+    "__energy_demand__:south": {
+      "type": "aggregated",
+      "agg_func": "product",
+      "parameters": [
+        "energy_expected_demand_south",
+        "E_Demand_Factor"
+      ]
+    },
+    "__thermal_plant1_north__:capacity": {
+      "type": "constant",
+      "value": 1000,
+      "is_variable": false,
+      "upper_bounds": 1000,
+      "lower_bounds": 0,
+      "comment": "units [MW]"
+    },
+    "__thermal_plant2_north__:capacity": {
+      "type": "constant",
+      "value": 0.0,
+      "is_variable": true,
+      "upper_bounds": 3000,
+      "lower_bounds": 0,
+      "comment": "units [MW]"
+    },
+    "__thermal_plant1_south__:capacity": {
+      "type": "constant",
+      "value": 1000,
+      "is_variable": false,
+      "upper_bounds": 1000,
+      "lower_bounds": 0,
+      "comment": "units [MW]"
+    },
+    "__hydropower_plant_north__:capacity": {
+      "type": "constant",
+      "value": 1500,
+      "is_variable": false,
+      "upper_bounds": 1500,
+      "lower_bounds": 0,
+      "comment": "units [MW]"
+    },
+    "__hydropower_plant_south__:capacity": {
+      "type": "constant",
+      "value": 0,
+      "is_variable": true,
+      "upper_bounds": 1500,
+      "lower_bounds": 0,
+      "comment": "units [MW]"
+    },
+    "__transmission_line__:capacity": {
+      "type": "constant",
+      "value": 0.0,
+      "is_variable": true,
+      "upper_bounds": 3000,
+      "lower_bounds": 0,
+      "comment": "units [MW]"
+    },
+    "__irrigation_north__:penalty":{
+      "type": "constant",
+      "value": -10000,
+      "is_variable": false,
+      "upper_bounds": 0,
+      "lower_bounds": -10000,
+      "comment": "units [$]"
+    },
+    "__irrigation_south__:penalty":{
+      "type": "constant",
+      "value": -10000,
+      "is_variable": false,
+      "upper_bounds": 0,
+      "lower_bounds": -10000,
+      "comment": "units [$]"
+    },
+    "__water_supply_north__:penalty":{
+      "type": "constant",
+      "value": -10000,
+      "is_variable": false,
+      "upper_bounds": 0,
+      "lower_bounds": -10000,
+      "comment": "units [$]"
+    },
+    "__water_supply_south__:penalty":{
+      "type": "constant",
+      "value": -10000,
+      "is_variable": false,
+      "upper_bounds": 0,
+      "lower_bounds": -10000,
+      "comment": "units [$]"
+    },
+    "__energy_demand_north__:penalty":{
+      "type": "constant",
+      "value": -100,
+      "is_variable": false,
+      "upper_bounds": 0,
+      "lower_bounds": -10000,
+      "comment": "units [$]"
+    },
+    "__energy_demand_south__:penalty":{
+      "type": "constant",
+      "value": -100,
+      "is_variable": false,
+      "upper_bounds": 0,
+      "lower_bounds": -10000,
+      "comment": "units [$]"
+    }
+  },
+  "recorders": {
+    "__irrigation_north__:deficit_freq": {
+      "type": "deficitfrequencynodeRecorder",
+      "node": "irrigation_north"
+    },
+    "__water_supply_north__:deficit_freq": {
+      "type": "deficitfrequencynodeRecorder",
+      "node": "irrigation_north"
+    },
+    "__irrigation_south__:deficit_freq": {
+      "type": "deficitfrequencynodeRecorder",
+      "node": "irrigation_south"
+    },
+    "__water_supply_south__:deficit_freq": {
+      "type": "deficitfrequencynodeRecorder",
+      "node": "water_supply_south"
+    },
+    "aggr_water_deficit_freq": {
+      "type": "aggregatedrecorder",
+      "recorder_agg_func": "max",
+      "recorders": [
+        "__irrigation_north__:deficit_freq",
+        "__water_supply_north__:deficit_freq",
+        "__irrigation_south__:deficit_freq",
+        "__water_supply_south__:deficit_freq"
+      ],
+      "is_objective": "minimise"
+    },
+    "__reservoir_south__:capex": {
+      "type": "MeanParameterRecorder",
+      "parameter": "__reservoir_south__:capacity",
+      "factor": 9982,
+      "comment": "annualised cost units [$/hm^3]"
+    },
+    "__irrigation_north_canal2__:new_canal_capex": {
+      "type": "MeanParameterRecorder",
+      "parameter": "__new_irrigation_canal_north__:capacity",
+      "factor": 8094058,
+      "comment": "annualised cost units [$/hm^3/day]"
+    },
+    "water_infrastructure_total_capex": {
+      "type": "aggregated",
+      "recorder_agg_func": "sum",
+      "recorders": [
+        "__reservoir_south__:capex",
+        "__irrigation_north_canal2__:new_canal_capex"
+      ],
+      "is_objective": null
+    },
+    "__thermal_plant2_north__:capacity_capex": {
+      "type": "MeanParameterRecorder",
+      "parameter": "__thermal_plant2_north__:capacity",
+      "factor": 130199,
+      "comment": "units [$/MW]"
+    },
+    "__hydropower_plant_south__:capacity_capex": {
+      "type": "MeanParameterRecorder",
+      "parameter": "__hydropower_plant_south__:capacity",
+      "factor": 90380,
+      "comment": "units [$/MW]"
+    },
+    "__transmission_line_north_south__:capacity_capex": {
+      "type": "MeanParameterRecorder",
+      "parameter": "__transmission_line__:capacity",
+      "factor": 5484,
+      "comment": "units [$/MW]"
+    },
+    "energy_infrastructure_total_capex": {
+      "type": "aggregated",
+      "recorder_agg_func": "sum",
+      "recorders": [
+        "__thermal_plant2_north__:capacity_capex",
+        "__hydropower_plant_south__:capacity_capex",
+        "__transmission_line_north_south__:capacity_capex"
+      ],
+      "is_objective": null
+    },
+    "__thermal_plant1_north__:opex": {
+      "type": "TotalFlowNodeRecorder",
+      "node": "thermal_plant1_north",
+      "factor": 0.96,
+      "comment": "units [$/MWh]"
+    },
+    "__thermal_plant2_north__:opex": {
+      "type": "TotalFlowNodeRecorder",
+      "node": "thermal_plant2_north",
+      "factor": 2.22,
+      "comment": "units [$/MWh]"
+    },
+    "__thermal_plant1_south__:opex": {
+      "type": "TotalFlowNodeRecorder",
+      "node": "thermal_plant1_south",
+      "factor": 4.28,
+      "comment": "units [$/MWh]"
+    },
+    "energy_total_opex": {
+      "type": "aggregated",
+      "recorder_agg_func": "sum",
+      "recorders": [
+        "__thermal_plant1_north__:opex",
+        "__thermal_plant2_north__:opex",
+        "__thermal_plant1_south__:opex"
+      ],
+      "is_objective": null
+    },
+    "__energy_demand_north__:deficit_freq": {
+      "type": "deficitfrequencynodeRecorder",
+      "node": "energy_demand_north"
+    },
+    "__energy_demand_south__:deficit_freq": {
+      "type": "deficitfrequencynodeRecorder",
+      "node": "energy_demand_south"
+    },
+    "aggr_Energy_deficit_freq": {
+      "type": "aggregatedrecorder",
+      "recorder_agg_func": "max",
+      "recorders": [
+        "__energy_demand_north__:deficit_freq",
+        "__energy_demand_south__:deficit_freq"
+      ],
+      "is_objective": "minimise"
+    },
+    "total_system_cost": {
+      "type": "aggregated",
+      "recorder_agg_func": "sum",
+      "recorders": [
+        "energy_infrastructure_total_capex",
+        "energy_total_opex",
+        "water_infrastructure_total_capex"
+      ],
+      "is_objective": "minimise"
+    },
+    "__hydropower_north_plant_generation__:MWh": {
+      "type": "TotalFlowNodeRecorder",
+      "node": "hydropower_north_plant_generation"
+    },
+    "__hydropower_south_plant_generation__:MWh": {
+      "type": "TotalFlowNodeRecorder",
+      "node": "hydropower_south_plant_generation"
+    },
+    "aggr_Hydropower_generation_MWh": {
+      "type": "aggregated",
+      "recorder_agg_func": "sum",
+      "recorders": [
+        "__hydropower_north_plant_generation__:MWh",
+        "__hydropower_south_plant_generation__:MWh"
+      ],
+      "is_objective": null
+    }
+  }
+}
